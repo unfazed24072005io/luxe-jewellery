@@ -53,9 +53,7 @@ export default function Navbar() {
                 {/* Admin link gets special styling */}
                 {link.name === 'Admin' && (
                   <div className="absolute -top-1 -right-1">
-                    <span className="text-[10px] bg-red-500 text-white px-1.5 py-0.5 rounded-full animate-pulse">
-                      ADMIN
-                    </span>
+                    
                   </div>
                 )}
               </div>
