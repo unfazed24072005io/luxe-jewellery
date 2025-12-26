@@ -77,11 +77,6 @@ export default function RootLayout({ children }) {
                 <div>
                   © {new Date().getFullYear()} LUXE Jewellery. All rights reserved.
                 </div>
-                <div className="flex space-x-4 mt-2 md:mt-0">
-                  <a href="/privacy" className="hover:text-yellow-400 transition-colors">Privacy</a>
-                  <a href="/terms" className="hover:text-yellow-400 transition-colors">Terms</a>
-                  <a href="/sitemap" className="hover:text-yellow-400 transition-colors">Sitemap</a>
-                </div>
               </div>
             </div>
           </footer>
