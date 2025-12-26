@@ -29,7 +29,24 @@ export default function AdminPage() {
   });
 
   const [editingId, setEditingId] = useState(null);
+const fetchAllData = async () => {
+    setLoading(true);
+    try {
+      const [productsSnap, collectionsSnap, blogsSnap] = await Promise.all([
+        getDocs(collection(db, 'products')),
+        getDocs(collection(db, 'collections')),
+        getDocs(collection(db, 'blogs'))
+      ]);
 
+      setProducts(productsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      setCollections(collectionsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      setBlogs(blogsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      alert('Error fetching data. Check console.');
+    }
+    setLoading(false);
+  };
   // Check login status on mount
   useEffect(() => {
     const loggedIn = localStorage.getItem('luxe_admin_logged_in');
@@ -133,24 +150,7 @@ export default function AdminPage() {
   }
 
   // ADMIN PANEL FUNCTIONS
-  const fetchAllData = async () => {
-    setLoading(true);
-    try {
-      const [productsSnap, collectionsSnap, blogsSnap] = await Promise.all([
-        getDocs(collection(db, 'products')),
-        getDocs(collection(db, 'collections')),
-        getDocs(collection(db, 'blogs'))
-      ]);
-
-      setProducts(productsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-      setCollections(collectionsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-      setBlogs(blogsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      alert('Error fetching data. Check console.');
-    }
-    setLoading(false);
-  };
+  
 
   // Product CRUD
   const handleProductSubmit = async (e) => {
