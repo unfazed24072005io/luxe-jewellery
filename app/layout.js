@@ -53,22 +53,10 @@ export default function RootLayout({ children }) {
                   <ul className="space-y-2">
                     <li><a href="/products" className="text-gray-400 hover:text-yellow-400 transition-colors">Collections</a></li>
                     <li><a href="/about" className="text-gray-400 hover:text-yellow-400 transition-colors">About Us</a></li>
-                    <li><a href="/craftsmanship" className="text-gray-400 hover:text-yellow-400 transition-colors">Craftsmanship</a></li>
+                    <li><a href="/products" className="text-gray-400 hover:text-yellow-400 transition-colors">Products</a></li>
                     <li><a href="/contact" className="text-gray-400 hover:text-yellow-400 transition-colors">Contact</a></li>
                   </ul>
                 </div>
-
-                {/* Services */}
-                <div>
-                  <h3 className="text-yellow-400 font-semibold mb-4">SERVICES</h3>
-                  <ul className="space-y-2">
-                    <li><a href="/custom" className="text-gray-400 hover:text-yellow-400 transition-colors">Custom Design</a></li>
-                    <li><a href="/repair" className="text-gray-400 hover:text-yellow-400 transition-colors">Repair</a></li>
-                    <li><a href="/shipping" className="text-gray-400 hover:text-yellow-400 transition-colors">Shipping</a></li>
-                    <li><a href="/appointment" className="text-gray-400 hover:text-yellow-400 transition-colors">Appointments</a></li>
-                  </ul>
-                </div>
-
                 {/* Contact Info */}
                 <div>
                   <h3 className="text-yellow-400 font-semibold mb-4">CONTACT</h3>
