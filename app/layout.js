@@ -64,7 +64,7 @@ export default function RootLayout({ children }) {
                     <p>28, Heritage Street</p>
                     <p>Mumbai 400001, India</p>
                     <p>+91 22 1234 5678</p>
-                    <p>info@luxejewellery.com</p>
+                    <p>info@diamantra.com</p>
                   </div>
                 </div>
               </div>
@@ -75,7 +75,7 @@ export default function RootLayout({ children }) {
               {/* Bottom Bar */}
               <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
                 <div>
-                  © {new Date().getFullYear()} LUXE Jewellery. All rights reserved.
+                  © {new Date().getFullYear()} DiaMantra. All rights reserved.
                 </div>
               </div>
             </div>
