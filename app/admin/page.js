@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where } from 'firebase/firestore';
 
 export default function AdminPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -14,40 +14,45 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState('products');
   const [products, setProducts] = useState([]);
   const [collections, setCollections] = useState([]);
-  const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Form states
+  // Form states with additional fields
   const [productForm, setProductForm] = useState({
-    name: '', slug: '', price: '', category: '', material: '', collection: '', description: '', image: ''
+    name: '', 
+    slug: '', 
+    price: '', 
+    category: 'earrings', 
+    gender: 'both', // New: men, women, both
+    material: '925 Silver', 
+    collection: '', 
+    description: '', 
+    images: ['', '', '', ''], // Multiple images
+    featured: false,
+    inStock: true,
+    sku: '',
+    weight: '',
+    dimensions: '',
+    style: '', // New: style field
+    stones: '',
+    careInstructions: ''
   });
+
   const [collectionForm, setCollectionForm] = useState({
-    name: '', slug: '', description: '', image: ''
-  });
-  const [blogForm, setBlogForm] = useState({
-    title: '', slug: '', excerpt: '', content: '', author: '', date: '', image: ''
+    name: '', 
+    slug: '', 
+    description: '', 
+    image: '',
+    gender: 'both', // New: who the collection is for
+    style: '', // New: collection style/theme
+    featured: false,
+    products: [] // Array of product IDs in this collection
   });
 
-  const [editingId, setEditingId] = useState(null);
-const fetchAllData = async () => {
-    setLoading(true);
-    try {
-      const [productsSnap, collectionsSnap, blogsSnap] = await Promise.all([
-        getDocs(collection(db, 'products')),
-        getDocs(collection(db, 'collections')),
-        getDocs(collection(db, 'blogs'))
-      ]);
+  // Category and style options
+  const categories = ['Earrings', 'Pendants', 'Bracelets', 'Rings', 'Chains', 'Charms', 'Studs'];
+  const genderOptions = ['men', 'women', 'both'];
+  const styleOptions = ['Minimalist', 'Modern', 'Vintage', 'Statement', 'Everyday', 'Festival', 'Bridal'];
 
-      setProducts(productsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-      setCollections(collectionsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-      setBlogs(blogsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      alert('Error fetching data. Check console.');
-    }
-    setLoading(false);
-  };
-  // Check login status on mount
   useEffect(() => {
     const loggedIn = localStorage.getItem('luxe_admin_logged_in');
     if (loggedIn === 'true') {
@@ -56,7 +61,23 @@ const fetchAllData = async () => {
     }
   }, []);
 
-  // Login function
+  const fetchAllData = async () => {
+    setLoading(true);
+    try {
+      const [productsSnap, collectionsSnap] = await Promise.all([
+        getDocs(collection(db, 'products')),
+        getDocs(collection(db, 'collections'))
+      ]);
+
+      setProducts(productsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      setCollections(collectionsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      alert('Error fetching data. Check console.');
+    }
+    setLoading(false);
+  };
+
   const handleLogin = (e) => {
     e.preventDefault();
     setError('');
@@ -77,52 +98,53 @@ const fetchAllData = async () => {
     setPassword('');
   };
 
-  // Login Page - Compact & Professional
+  // Login Page
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="w-full max-w-sm">
-          {/* Header */}
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-serif font-bold text-gray-900">LUXE</h1>
-            <p className="text-gray-500 text-sm mt-1">Admin Dashboard</p>
+            <h1 className="text-4xl font-bold mb-2">
+              <span className="text-gray-800">Dia</span>
+              <span className="text-cyan-600">Mantra</span>
+            </h1>
+            <p className="text-gray-600">Admin Dashboard</p>
           </div>
 
-          {/* Login Card */}
-          <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-6">Sign in to continue</h2>
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+            <h2 className="text-xl font-bold text-gray-800 mb-6 text-center">Admin Login</h2>
             
             <form onSubmit={handleLogin}>
               {error && (
-                <div className="mb-4 p-2 bg-red-50 border border-red-200 text-red-600 text-sm rounded">
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg">
                   {error}
                 </div>
               )}
 
-              <div className="space-y-4">
+              <div className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Username
                   </label>
                   <input
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-yellow-500"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                     placeholder="Enter username"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Password
                   </label>
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-yellow-500"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                     placeholder="Enter password"
                     required
                   />
@@ -131,38 +153,41 @@ const fetchAllData = async () => {
 
               <button
                 type="submit"
-                className="w-full mt-6 bg-black text-white py-2.5 rounded hover:bg-gray-800 transition-colors font-medium"
+                className="w-full mt-6 bg-gray-900 text-white py-3.5 rounded-lg hover:bg-black transition-colors font-semibold shadow-md hover:shadow-lg"
               >
                 Sign In
               </button>
             </form>
-
-           
           </div>
 
-          {/* Footer note */}
-          <p className="text-center text-gray-400 text-xs mt-6">
-            © 2025 LUXE Jewellery. Admin Access Only.
+          <p className="text-center text-gray-400 text-sm mt-8">
+            © 2025 DiaMantra. Admin Access Only.
           </p>
         </div>
       </div>
     );
   }
 
-  // ADMIN PANEL FUNCTIONS
-  
-
   // Product CRUD
   const handleProductSubmit = async (e) => {
     e.preventDefault();
     try {
-      const data = { ...productForm, price: parseFloat(productForm.price) };
+      const data = { 
+        ...productForm, 
+        price: parseFloat(productForm.price),
+        weight: parseFloat(productForm.weight) || 0,
+        featured: Boolean(productForm.featured),
+        inStock: Boolean(productForm.inStock),
+        createdAt: new Date().toISOString(),
+        images: productForm.images.filter(img => img.trim() !== '')
+      };
+      
       if (editingId) {
         await updateDoc(doc(db, 'products', editingId), data);
-        alert('Product updated!');
+        alert('Product updated successfully!');
       } else {
         await addDoc(collection(db, 'products'), data);
-        alert('Product added!');
+        alert('Product added successfully!');
       }
       resetProductForm();
       fetchAllData();
@@ -173,15 +198,20 @@ const fetchAllData = async () => {
   };
 
   const editProduct = (product) => {
-    setProductForm(product);
+    setProductForm({
+      ...product,
+      images: product.images || ['', '', '', ''],
+      price: product.price.toString(),
+      weight: product.weight?.toString() || ''
+    });
     setEditingId(product.id);
   };
 
   const deleteProduct = async (id) => {
-    if (!confirm('Delete this product?')) return;
+    if (!confirm('Are you sure you want to delete this product?')) return;
     try {
       await deleteDoc(doc(db, 'products', id));
-      alert('Product deleted!');
+      alert('Product deleted successfully!');
       fetchAllData();
     } catch (error) {
       console.error('Error deleting product:', error);
@@ -190,7 +220,12 @@ const fetchAllData = async () => {
   };
 
   const resetProductForm = () => {
-    setProductForm({ name: '', slug: '', price: '', category: '', material: '', collection: '', description: '', image: '' });
+    setProductForm({
+      name: '', slug: '', price: '', category: 'earrings', gender: 'both',
+      material: '925 Silver', collection: '', description: '', 
+      images: ['', '', '', ''], featured: false, inStock: true,
+      sku: '', weight: '', dimensions: '', style: '', stones: '', careInstructions: ''
+    });
     setEditingId(null);
   };
 
@@ -198,12 +233,19 @@ const fetchAllData = async () => {
   const handleCollectionSubmit = async (e) => {
     e.preventDefault();
     try {
+      const data = { 
+        ...collectionForm,
+        featured: Boolean(collectionForm.featured),
+        createdAt: new Date().toISOString(),
+        products: collectionForm.products || []
+      };
+      
       if (editingId) {
-        await updateDoc(doc(db, 'collections', editingId), collectionForm);
-        alert('Collection updated!');
+        await updateDoc(doc(db, 'collections', editingId), data);
+        alert('Collection updated successfully!');
       } else {
-        await addDoc(collection(db, 'collections'), collectionForm);
-        alert('Collection added!');
+        await addDoc(collection(db, 'collections'), data);
+        alert('Collection added successfully!');
       }
       resetCollectionForm();
       fetchAllData();
@@ -214,15 +256,18 @@ const fetchAllData = async () => {
   };
 
   const editCollection = (col) => {
-    setCollectionForm(col);
+    setCollectionForm({
+      ...col,
+      products: col.products || []
+    });
     setEditingId(col.id);
   };
 
   const deleteCollection = async (id) => {
-    if (!confirm('Delete this collection?')) return;
+    if (!confirm('Are you sure you want to delete this collection?')) return;
     try {
       await deleteDoc(doc(db, 'collections', id));
-      alert('Collection deleted!');
+      alert('Collection deleted successfully!');
       fetchAllData();
     } catch (error) {
       console.error('Error deleting collection:', error);
@@ -230,75 +275,40 @@ const fetchAllData = async () => {
   };
 
   const resetCollectionForm = () => {
-    setCollectionForm({ name: '', slug: '', description: '', image: '' });
-    setEditingId(null);
-  };
-
-  // Blog CRUD
-  const handleBlogSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (editingId) {
-        await updateDoc(doc(db, 'blogs', editingId), blogForm);
-        alert('Blog updated!');
-      } else {
-        await addDoc(collection(db, 'blogs'), blogForm);
-        alert('Blog added!');
-      }
-      resetBlogForm();
-      fetchAllData();
-    } catch (error) {
-      console.error('Error saving blog:', error);
-      alert('Error saving blog.');
-    }
-  };
-
-  const editBlog = (blog) => {
-    setBlogForm(blog);
-    setEditingId(blog.id);
-  };
-
-  const deleteBlog = async (id) => {
-    if (!confirm('Delete this blog?')) return;
-    try {
-      await deleteDoc(doc(db, 'blogs', id));
-      alert('Blog deleted!');
-      fetchAllData();
-    } catch (error) {
-      console.error('Error deleting blog:', error);
-    }
-  };
-
-  const resetBlogForm = () => {
-    setBlogForm({ title: '', slug: '', excerpt: '', content: '', author: '', date: '', image: '' });
+    setCollectionForm({
+      name: '', slug: '', description: '', image: '',
+      gender: 'both', style: '', featured: false, products: []
+    });
     setEditingId(null);
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading dashboard...</p>
         </div>
       </div>
     );
   }
 
-  // ADMIN PANEL UI
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-3">
+      <div className="bg-white border-b shadow-sm sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-xl font-semibold text-gray-900">LUXE Admin</h1>
-              <p className="text-sm text-gray-500">Manage store content</p>
+              <h1 className="text-2xl font-bold text-gray-900">
+                <span className="text-gray-800">Dia</span>
+                <span className="text-cyan-600">Mantra</span> Admin
+              </h1>
+              <p className="text-sm text-gray-500">Manage products, collections, and more</p>
             </div>
             <button
               onClick={handleLogout}
-              className="px-4 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+              className="px-5 py-2 text-sm bg-gray-900 text-white rounded-lg hover:bg-black transition-colors font-medium"
             >
               Logout
             </button>
@@ -306,46 +316,265 @@ const fetchAllData = async () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Tabs */}
-        <div className="flex border-b mb-6">
-          {['products', 'collections', 'blogs'].map(tab => (
+        <div className="flex border-b mb-8 overflow-x-auto">
+          {['products', 'collections'].map(tab => (
             <button
               key={tab}
               onClick={() => { setActiveTab(tab); setEditingId(null); }}
-              className={`px-5 py-2 text-sm font-medium capitalize ${
+              className={`px-6 py-3 text-sm font-medium capitalize whitespace-nowrap ${
                 activeTab === tab
-                  ? 'border-b-2 border-black text-black'
+                  ? 'border-b-2 border-cyan-600 text-cyan-600'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              {tab}
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
           ))}
         </div>
 
         {/* Products Tab */}
         {activeTab === 'products' && (
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg border p-5">
-              <h2 className="text-lg font-semibold mb-4">
-                {editingId ? 'Edit Product' : 'Add Product'}
+          <div className="space-y-8">
+            <div className="bg-white rounded-xl shadow border p-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-6">
+                {editingId ? '✏️ Edit Product' : '➕ Add New Product'}
               </h2>
-              <form onSubmit={handleProductSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <input type="text" placeholder="Name *" value={productForm.name} onChange={e => setProductForm({...productForm, name: e.target.value})} className="px-3 py-2 border rounded text-sm" required />
-                <input type="text" placeholder="Slug *" value={productForm.slug} onChange={e => setProductForm({...productForm, slug: e.target.value})} className="px-3 py-2 border rounded text-sm" required />
-                <input type="number" placeholder="Price *" value={productForm.price} onChange={e => setProductForm({...productForm, price: e.target.value})} className="px-3 py-2 border rounded text-sm" required />
-                <input type="text" placeholder="Category" value={productForm.category} onChange={e => setProductForm({...productForm, category: e.target.value})} className="px-3 py-2 border rounded text-sm" />
-                <input type="text" placeholder="Material" value={productForm.material} onChange={e => setProductForm({...productForm, material: e.target.value})} className="px-3 py-2 border rounded text-sm" />
-                <input type="text" placeholder="Collection" value={productForm.collection} onChange={e => setProductForm({...productForm, collection: e.target.value})} className="px-3 py-2 border rounded text-sm" />
-                <input type="text" placeholder="Image URL" value={productForm.image} onChange={e => setProductForm({...productForm, image: e.target.value})} className="px-3 py-2 border rounded text-sm md:col-span-2" />
-                <textarea placeholder="Description" value={productForm.description} onChange={e => setProductForm({...productForm, description: e.target.value})} className="px-3 py-2 border rounded text-sm md:col-span-2" rows="2" />
-                <div className="md:col-span-2 flex gap-2">
-                  <button type="submit" className="px-4 py-2 bg-black text-white text-sm rounded hover:bg-gray-800">
-                    {editingId ? 'Update' : 'Add Product'}
+              
+              <form onSubmit={handleProductSubmit} className="space-y-6">
+                {/* Basic Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Name *</label>
+                    <input
+                      type="text"
+                      placeholder="Product name"
+                      value={productForm.name}
+                      onChange={e => setProductForm({...productForm, name: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Slug *</label>
+                    <input
+                      type="text"
+                      placeholder="product-slug"
+                      value={productForm.slug}
+                      onChange={e => setProductForm({...productForm, slug: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Price ($) *</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      placeholder="99.99"
+                      value={productForm.price}
+                      onChange={e => setProductForm({...productForm, price: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Category & Gender */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                    <select
+                      value={productForm.category}
+                      onChange={e => setProductForm({...productForm, category: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    >
+                      {categories.map(cat => (
+                        <option key={cat} value={cat.toLowerCase()}>{cat}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                    <select
+                      value={productForm.gender}
+                      onChange={e => setProductForm({...productForm, gender: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    >
+                      {genderOptions.map(gender => (
+                        <option key={gender} value={gender}>{gender}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Style</label>
+                    <select
+                      value={productForm.style}
+                      onChange={e => setProductForm({...productForm, style: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    >
+                      <option value="">Select style</option>
+                      {styleOptions.map(style => (
+                        <option key={style} value={style}>{style}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Material & Collection */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Material</label>
+                    <input
+                      type="text"
+                      placeholder="925 Silver, Gold Plated, etc."
+                      value={productForm.material}
+                      onChange={e => setProductForm({...productForm, material: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Collection</label>
+                    <select
+                      value={productForm.collection}
+                      onChange={e => setProductForm({...productForm, collection: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    >
+                      <option value="">No collection</option>
+                      {collections.map(col => (
+                        <option key={col.id} value={col.slug}>{col.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Images */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Product Images (URLs)</label>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {productForm.images.map((img, index) => (
+                      <input
+                        key={index}
+                        type="text"
+                        placeholder={`Image ${index + 1} URL`}
+                        value={img}
+                        onChange={e => {
+                          const newImages = [...productForm.images];
+                          newImages[index] = e.target.value;
+                          setProductForm({...productForm, images: newImages});
+                        }}
+                        className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Additional Info */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">SKU</label>
+                    <input
+                      type="text"
+                      placeholder="DM-001"
+                      value={productForm.sku}
+                      onChange={e => setProductForm({...productForm, sku: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Weight (g)</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      placeholder="5.2"
+                      value={productForm.weight}
+                      onChange={e => setProductForm({...productForm, weight: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                {/* Stones & Care */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Stones</label>
+                    <input
+                      type="text"
+                      placeholder="Lab diamonds, cubic zirconia, etc."
+                      value={productForm.stones}
+                      onChange={e => setProductForm({...productForm, stones: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Care Instructions</label>
+                    <input
+                      type="text"
+                      placeholder="Avoid water, store in box, etc."
+                      value={productForm.careInstructions}
+                      onChange={e => setProductForm({...productForm, careInstructions: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                  <textarea
+                    placeholder="Detailed product description..."
+                    value={productForm.description}
+                    onChange={e => setProductForm({...productForm, description: e.target.value})}
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent h-32"
+                  />
+                </div>
+
+                {/* Checkboxes */}
+                <div className="flex items-center gap-6">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={productForm.featured}
+                      onChange={e => setProductForm({...productForm, featured: e.target.checked})}
+                      className="rounded text-cyan-600 focus:ring-cyan-500"
+                    />
+                    <span className="text-sm text-gray-700">Featured Product</span>
+                  </label>
+                  
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={productForm.inStock}
+                      onChange={e => setProductForm({...productForm, inStock: e.target.checked})}
+                      className="rounded text-cyan-600 focus:ring-cyan-500"
+                    />
+                    <span className="text-sm text-gray-700">In Stock</span>
+                  </label>
+                </div>
+
+                {/* Form Actions */}
+                <div className="flex gap-3 pt-4 border-t">
+                  <button
+                    type="submit"
+                    className="px-6 py-3 bg-cyan-600 text-white font-medium rounded-lg hover:bg-cyan-700 transition-colors"
+                  >
+                    {editingId ? 'Update Product' : 'Add Product'}
                   </button>
+                  
                   {editingId && (
-                    <button type="button" onClick={resetProductForm} className="px-4 py-2 bg-gray-200 text-sm rounded hover:bg-gray-300">
+                    <button
+                      type="button"
+                      onClick={resetProductForm}
+                      className="px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors"
+                    >
                       Cancel
                     </button>
                   )}
@@ -353,29 +582,84 @@ const fetchAllData = async () => {
               </form>
             </div>
 
-            <div className="bg-white rounded-lg border p-5">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="font-semibold">Products ({products.length})</h3>
+            {/* Products List */}
+            <div className="bg-white rounded-xl shadow border p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-bold text-gray-800">All Products ({products.length})</h3>
+                <div className="flex gap-2">
+                  <span className="text-xs px-2 py-1 bg-cyan-100 text-cyan-800 rounded">Featured: {products.filter(p => p.featured).length}</span>
+                  <span className="text-xs px-2 py-1 bg-gray-100 text-gray-800 rounded">
+                    Men: {products.filter(p => p.gender === 'men').length}
+                  </span>
+                  <span className="text-xs px-2 py-1 bg-pink-100 text-pink-800 rounded">
+                    Women: {products.filter(p => p.gender === 'women').length}
+                  </span>
+                </div>
               </div>
+              
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-3 py-2 text-left">Name</th>
-                      <th className="px-3 py-2 text-left">Price</th>
-                      <th className="px-3 py-2 text-left">Category</th>
-                      <th className="px-3 py-2 text-right">Actions</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Gender</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-gray-100">
                     {products.map(product => (
-                      <tr key={product.id} className="border-t">
-                        <td className="px-3 py-3">{product.name}</td>
-                        <td className="px-3 py-3">${product.price}</td>
-                        <td className="px-3 py-3">{product.category}</td>
-                        <td className="px-3 py-3 text-right">
-                          <button onClick={() => editProduct(product)} className="text-blue-600 hover:underline mr-3 text-sm">Edit</button>
-                          <button onClick={() => deleteProduct(product.id)} className="text-red-600 hover:underline text-sm">Delete</button>
+                      <tr key={product.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-3">
+                            {product.images?.[0] && (
+                              <img src={product.images[0]} alt="" className="w-10 h-10 rounded object-cover" />
+                            )}
+                            <div>
+                              <div className="font-medium text-gray-900">{product.name}</div>
+                              {product.featured && (
+                                <span className="text-xs text-cyan-600">★ Featured</span>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">${product.price}</td>
+                        <td className="px-4 py-3">
+                          <span className="px-2 py-1 text-xs bg-gray-100 rounded">{product.category}</span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className={`px-2 py-1 text-xs rounded ${
+                            product.gender === 'men' ? 'bg-blue-100 text-blue-800' :
+                            product.gender === 'women' ? 'bg-pink-100 text-pink-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {product.gender}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className={`px-2 py-1 text-xs rounded ${
+                            product.inStock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                          }`}>
+                            {product.inStock ? 'In Stock' : 'Out of Stock'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <div className="flex justify-end gap-2">
+                            <button
+                              onClick={() => editProduct(product)}
+                              className="px-3 py-1.5 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => deleteProduct(product.id)}
+                              className="px-3 py-1.5 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -388,79 +672,157 @@ const fetchAllData = async () => {
 
         {/* Collections Tab */}
         {activeTab === 'collections' && (
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg border p-5">
-              <h2 className="text-lg font-semibold mb-4">
-                {editingId ? 'Edit Collection' : 'Add Collection'}
+          <div className="space-y-8">
+            <div className="bg-white rounded-xl shadow border p-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-6">
+                {editingId ? '✏️ Edit Collection' : '➕ Add New Collection'}
               </h2>
-              <form onSubmit={handleCollectionSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <input type="text" placeholder="Name *" value={collectionForm.name} onChange={e => setCollectionForm({...collectionForm, name: e.target.value})} className="px-3 py-2 border rounded text-sm" required />
-                <input type="text" placeholder="Slug *" value={collectionForm.slug} onChange={e => setCollectionForm({...collectionForm, slug: e.target.value})} className="px-3 py-2 border rounded text-sm" required />
-                <input type="text" placeholder="Image URL" value={collectionForm.image} onChange={e => setCollectionForm({...collectionForm, image: e.target.value})} className="px-3 py-2 border rounded text-sm md:col-span-2" />
-                <textarea placeholder="Description" value={collectionForm.description} onChange={e => setCollectionForm({...collectionForm, description: e.target.value})} className="px-3 py-2 border rounded text-sm md:col-span-2" rows="2" />
-                <div className="md:col-span-2 flex gap-2">
-                  <button type="submit" className="px-4 py-2 bg-black text-white text-sm rounded hover:bg-gray-800">
-                    {editingId ? 'Update' : 'Add Collection'}
-                  </button>
-                  {editingId && (
-                    <button type="button" onClick={resetCollectionForm} className="px-4 py-2 bg-gray-200 text-sm rounded hover:bg-gray-300">
-                      Cancel
-                    </button>
+              
+              <form onSubmit={handleCollectionSubmit} className="space-y-6">
+                {/* Basic Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Name *</label>
+                    <input
+                      type="text"
+                      placeholder="Collection name"
+                      value={collectionForm.name}
+                      onChange={e => setCollectionForm({...collectionForm, name: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Slug *</label>
+                    <input
+                      type="text"
+                      placeholder="collection-slug"
+                      value={collectionForm.slug}
+                      onChange={e => setCollectionForm({...collectionForm, slug: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Gender & Style */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Target Gender</label>
+                    <select
+                      value={collectionForm.gender}
+                      onChange={e => setCollectionForm({...collectionForm, gender: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    >
+                      {genderOptions.map(gender => (
+                        <option key={gender} value={gender}>{gender}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Style/Theme</label>
+                    <select
+                      value={collectionForm.style}
+                      onChange={e => setCollectionForm({...collectionForm, style: e.target.value})}
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    >
+                      <option value="">Select style</option>
+                      {styleOptions.map(style => (
+                        <option key={style} value={style}>{style}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Image */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Cover Image URL</label>
+                  <input
+                    type="text"
+                    placeholder="https://example.com/image.jpg"
+                    value={collectionForm.image}
+                    onChange={e => setCollectionForm({...collectionForm, image: e.target.value})}
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  />
+                  {collectionForm.image && (
+                    <div className="mt-2">
+                      <img 
+                        src={collectionForm.image} 
+                        alt="Preview" 
+                        className="w-32 h-32 rounded-lg object-cover border"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    </div>
                   )}
                 </div>
-              </form>
-            </div>
 
-            <div className="bg-white rounded-lg border p-5">
-              <h3 className="font-semibold mb-4">Collections ({collections.length})</h3>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-3 py-2 text-left">Name</th>
-                      <th className="px-3 py-2 text-left">Slug</th>
-                      <th className="px-3 py-2 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {collections.map(col => (
-                      <tr key={col.id} className="border-t">
-                        <td className="px-3 py-3">{col.name}</td>
-                        <td className="px-3 py-3">{col.slug}</td>
-                        <td className="px-3 py-3 text-right">
-                          <button onClick={() => editCollection(col)} className="text-blue-600 hover:underline mr-3 text-sm">Edit</button>
-                          <button onClick={() => deleteCollection(col.id)} className="text-red-600 hover:underline text-sm">Delete</button>
-                        </td>
-                      </tr>
+                {/* Description */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                  <textarea
+                    placeholder="Collection description..."
+                    value={collectionForm.description}
+                    onChange={e => setCollectionForm({...collectionForm, description: e.target.value})}
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent h-32"
+                  />
+                </div>
+
+                {/* Products in Collection */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Products in Collection</label>
+                  <div className="space-y-2">
+                    {products.map(product => (
+                      <label key={product.id} className="flex items-center gap-3">
+                        <input
+                          type="checkbox"
+                          checked={collectionForm.products?.includes(product.id) || false}
+                          onChange={(e) => {
+                            const newProducts = e.target.checked
+                              ? [...(collectionForm.products || []), product.id]
+                              : (collectionForm.products || []).filter(id => id !== product.id);
+                            setCollectionForm({...collectionForm, products: newProducts});
+                          }}
+                          className="rounded text-cyan-600"
+                        />
+                        <span className="text-sm text-gray-700">{product.name}</span>
+                        <span className="text-xs text-gray-500">(${product.price})</span>
+                      </label>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        )}
+                  </div>
+                </div>
 
-        {/* Blogs Tab */}
-        {activeTab === 'blogs' && (
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg border p-5">
-              <h2 className="text-lg font-semibold mb-4">
-                {editingId ? 'Edit Blog Post' : 'Add Blog Post'}
-              </h2>
-              <form onSubmit={handleBlogSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <input type="text" placeholder="Title *" value={blogForm.title} onChange={e => setBlogForm({...blogForm, title: e.target.value})} className="px-3 py-2 border rounded text-sm md:col-span-2" required />
-                <input type="text" placeholder="Slug *" value={blogForm.slug} onChange={e => setBlogForm({...blogForm, slug: e.target.value})} className="px-3 py-2 border rounded text-sm" required />
-                <input type="text" placeholder="Author" value={blogForm.author} onChange={e => setBlogForm({...blogForm, author: e.target.value})} className="px-3 py-2 border rounded text-sm" />
-                <input type="date" value={blogForm.date} onChange={e => setBlogForm({...blogForm, date: e.target.value})} className="px-3 py-2 border rounded text-sm" />
-                <input type="text" placeholder="Image URL" value={blogForm.image} onChange={e => setBlogForm({...blogForm, image: e.target.value})} className="px-3 py-2 border rounded text-sm" />
-                <textarea placeholder="Excerpt" value={blogForm.excerpt} onChange={e => setBlogForm({...blogForm, excerpt: e.target.value})} className="px-3 py-2 border rounded text-sm md:col-span-2" rows="2" />
-                <textarea placeholder="Content" value={blogForm.content} onChange={e => setBlogForm({...blogForm, content: e.target.value})} className="px-3 py-2 border rounded text-sm md:col-span-2" rows="4" />
-                <div className="md:col-span-2 flex gap-2">
-                  <button type="submit" className="px-4 py-2 bg-black text-white text-sm rounded hover:bg-gray-800">
-                    {editingId ? 'Update' : 'Add Post'}
+                {/* Featured */}
+                <div>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={collectionForm.featured}
+                      onChange={e => setCollectionForm({...collectionForm, featured: e.target.checked})}
+                      className="rounded text-cyan-600 focus:ring-cyan-500"
+                    />
+                    <span className="text-sm text-gray-700">Featured Collection</span>
+                  </label>
+                </div>
+
+                {/* Form Actions */}
+                <div className="flex gap-3 pt-4 border-t">
+                  <button
+                    type="submit"
+                    className="px-6 py-3 bg-cyan-600 text-white font-medium rounded-lg hover:bg-cyan-700 transition-colors"
+                  >
+                    {editingId ? 'Update Collection' : 'Create Collection'}
                   </button>
+                  
                   {editingId && (
-                    <button type="button" onClick={resetBlogForm} className="px-4 py-2 bg-gray-200 text-sm rounded hover:bg-gray-300">
+                    <button
+                      type="button"
+                      onClick={resetCollectionForm}
+                      className="px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors"
+                    >
                       Cancel
                     </button>
                   )}
@@ -468,27 +830,67 @@ const fetchAllData = async () => {
               </form>
             </div>
 
-            <div className="bg-white rounded-lg border p-5">
-              <h3 className="font-semibold mb-4">Blog Posts ({blogs.length})</h3>
+            {/* Collections List */}
+            <div className="bg-white rounded-xl shadow border p-6">
+              <h3 className="text-lg font-bold text-gray-800 mb-6">All Collections ({collections.length})</h3>
+              
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-3 py-2 text-left">Title</th>
-                      <th className="px-3 py-2 text-left">Author</th>
-                      <th className="px-3 py-2 text-left">Date</th>
-                      <th className="px-3 py-2 text-right">Actions</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Collection</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Products</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Gender</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Style</th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {blogs.map(blog => (
-                      <tr key={blog.id} className="border-t">
-                        <td className="px-3 py-3">{blog.title}</td>
-                        <td className="px-3 py-3">{blog.author}</td>
-                        <td className="px-3 py-3">{blog.date}</td>
-                        <td className="px-3 py-3 text-right">
-                          <button onClick={() => editBlog(blog)} className="text-blue-600 hover:underline mr-3 text-sm">Edit</button>
-                          <button onClick={() => deleteBlog(blog.id)} className="text-red-600 hover:underline text-sm">Delete</button>
+                  <tbody className="divide-y divide-gray-100">
+                    {collections.map(collection => (
+                      <tr key={collection.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-3">
+                            {collection.image && (
+                              <img src={collection.image} alt="" className="w-12 h-12 rounded-lg object-cover" />
+                            )}
+                            <div>
+                              <div className="font-medium text-gray-900">{collection.name}</div>
+                              {collection.featured && (
+                                <span className="text-xs text-cyan-600">★ Featured</span>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="text-sm text-gray-700">{collection.products?.length || 0} products</span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className={`px-2 py-1 text-xs rounded ${
+                            collection.gender === 'men' ? 'bg-blue-100 text-blue-800' :
+                            collection.gender === 'women' ? 'bg-pink-100 text-pink-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {collection.gender}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="px-2 py-1 text-xs bg-gray-100 rounded">{collection.style || 'N/A'}</span>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <div className="flex justify-end gap-2">
+                            <button
+                              onClick={() => editCollection(collection)}
+                              className="px-3 py-1.5 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => deleteCollection(collection.id)}
+                              className="px-3 py-1.5 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
