@@ -6,13 +6,11 @@ import CollectionCard from '@/components/CollectionCard';
 
 // Categories with gender filter
 const CATEGORIES = [
-  { name: 'Earrings', icon: '👂', gender: 'women' },
-  { name: 'Pendants', icon: '💎', gender: 'both' },
+  { name: 'Rings', icon: '👂', gender: 'women' },
+  { name: 'Earrings', icon: '💎', gender: 'both' },
   { name: 'Bracelets', icon: '📿', gender: 'both' },
-  { name: 'Rings', icon: '💍', gender: 'both' },
-  { name: 'Chains', icon: '⛓️', gender: 'men' },
-  { name: 'Charms', icon: '✨', gender: 'both' },
-  { name: 'Studs', icon: '⭐', gender: 'men' },
+  { name: 'Necklace', icon: '💍', gender: 'both' },
+  { name: 'Mangalsutra', icon: '⛓️', gender: 'women' },
 ];
 
 async function getFeaturedProducts() {
@@ -63,68 +61,57 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section - Diamantra Style */}
-      <section className="relative w-full h-screen bg-gradient-to-br from-gray-900 to-black">
+      {/* Hero Section */}
+      <section className="relative w-full h-[600px] bg-gradient-to-br from-gray-600 via-gray-500 to-gray-400">
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-900/90 via-black/80 to-black"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-700/70 via-gray-600/60 to-gray-500/50"></div>
         </div>
 
         <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
           <div className="mb-8">
-            <h1 className="text-4xl md:text-7xl font-bold mb-2 text-white tracking-tight">
-              <span className="text-gray-300">Dia</span>
-              <span className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">Mantra</span>
+            <h1 className="text-5xl md:text-6xl font-serif mb-4 text-white tracking-wide italic">
+              Shine in Your Story
             </h1>
-            <div className="h-px w-32 bg-gradient-to-r from-transparent via-cyan-400 to-transparent mx-auto my-6"></div>
-            <p className="text-xl md:text-2xl text-gray-300 mb-8 font-light tracking-wide">
-              Lab-Grown Brilliance Meets Timeless Silver Elegance
+            <p className="text-2xl md:text-3xl text-white mb-6 font-light">
+              Crafted in Silver, Set in Soul
             </p>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              Crafted in Silver, Set in Soul. Shine in Your Story
+            <p className="text-white/90 text-base max-w-xl mx-auto mb-2">
+              Premium lab-grown diamond jewelry in 925 sterling silver
+            </p>
+            <p className="text-white/80 text-sm">
+              Certified • Ethical • Timeless
             </p>
           </div>
           
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link 
               href="/products" 
-              className="group px-8 py-3 bg-white text-black font-semibold rounded-full hover:bg-gray-100 transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl"
+              className="px-8 py-3 bg-yellow-500 text-black font-semibold rounded-full hover:bg-yellow-400 transition-all duration-300"
             >
-              Shop Now
-              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </Link>
-            <Link 
-              href="/collections" 
-              className="px-8 py-3 border-2 border-white text-white rounded-full hover:bg-white/10 transition-all duration-300"
-            >
-              View Collections
+              SHOP NOW
             </Link>
           </div>
         </div>
       </section>
 
       {/* Shop by Category */}
-      <section className="w-full py-16 bg-gray-50">
+      <section className="w-full py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Shop by Category</h2>
-            <p className="text-gray-600">Discover pieces crafted for every style and occasion</p>
+          <div className="text-center mb-8">
+            <h2 className="text-3xl md:text-4xl font-serif italic mb-2">Shop by Category</h2>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
             {CATEGORIES.map((category) => (
               <Link
                 key={category.name}
                 href={`/products?category=${category.name.toLowerCase()}&gender=${category.gender}`}
-                className="group flex flex-col items-center p-4 bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-gray-100"
+                className="group flex flex-col items-center p-6 bg-gray-200 rounded-lg hover:bg-gray-300 transition-all duration-300"
               >
-                <span className="text-3xl mb-2">{category.icon}</span>
-                <span className="text-sm font-medium text-gray-800">{category.name}</span>
-                <span className="text-xs text-gray-500 mt-1">
-                  {category.gender === 'both' ? 'For All' : 
-                   category.gender === 'women' ? 'For Her' : 'For Him'}
-                </span>
+                <div className="w-full aspect-square bg-gray-300 rounded-lg mb-3 flex items-center justify-center">
+                  <span className="text-4xl">{category.icon}</span>
+                </div>
+                <span className="text-sm font-medium text-gray-800 text-center">{category.name}</span>
               </Link>
             ))}
           </div>
@@ -132,22 +119,18 @@ export default async function Home() {
       </section>
 
       {/* For Her Section */}
-      <section className="w-full py-16 bg-gradient-to-r from-pink-50 to-white">
+      <section className="w-full py-12 bg-gray-100">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex justify-between items-center mb-6">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900">For Her</h2>
-              <p className="text-gray-600 mt-2">Elegant pieces that celebrate feminine grace</p>
+              <h2 className="text-3xl md:text-4xl font-serif italic text-gray-900">For Her</h2>
             </div>
-            <Link href="/products?gender=women" className="text-gray-700 hover:text-black font-medium flex items-center gap-2">
-              View All
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
+            <Link href="/products?gender=women" className="px-6 py-2 bg-yellow-500 text-black font-semibold rounded-full hover:bg-yellow-400 transition-all">
+              View More
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {womenProducts.slice(0, 4).map(product => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -156,22 +139,18 @@ export default async function Home() {
       </section>
 
       {/* For Him Section */}
-      <section className="w-full py-16 bg-gradient-to-r from-blue-50 to-white">
+      <section className="w-full py-12 bg-gray-100">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex justify-between items-center mb-6">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900">For Him</h2>
-              <p className="text-gray-600 mt-2">Bold designs for the modern man</p>
+              <h2 className="text-3xl md:text-4xl font-serif italic text-gray-900">For Him</h2>
             </div>
-            <Link href="/products?gender=men" className="text-gray-700 hover:text-black font-medium flex items-center gap-2">
-              View All
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
+            <Link href="/products?gender=men" className="px-6 py-2 bg-yellow-500 text-black font-semibold rounded-full hover:bg-yellow-400 transition-all">
+              View More
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {menProducts.slice(0, 4).map(product => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -179,100 +158,219 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Collections */}
-      <section className="w-full py-16 bg-white">
+      {/* Collections with Video Section */}
+      <section className="w-full py-16 bg-gray-200">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Featured Collections</h2>
-            <p className="text-gray-600">Curated collections with handpicked sparkle</p>
+            <h2 className="text-3xl md:text-4xl font-serif italic text-gray-900 mb-4">
+              All Products Video Session - Exclusive Collection
+            </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {collections.map(collection => (
-              <CollectionCard key={collection.id} collection={collection} />
+          <div className="relative bg-gray-300 rounded-2xl p-8 min-h-[400px] flex items-center justify-center mb-12">
+            <button className="w-20 h-20 bg-white rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg">
+              <svg className="w-8 h-8 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Products Grid */}
+      <section className="w-full py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {products.slice(0, 6).map(product => (
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
-
-          <div className="text-center mt-12">
+          
+          <div className="text-center mt-8">
             <Link 
-              href="/collections" 
-              className="inline-flex items-center gap-2 px-6 py-3 border-2 border-gray-900 text-gray-900 rounded-full hover:bg-gray-900 hover:text-white transition-all duration-300"
+              href="/products" 
+              className="inline-flex items-center gap-2 px-8 py-3 bg-yellow-500 text-black font-semibold rounded-full hover:bg-yellow-400 transition-all"
             >
-              Explore All Collections
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
+              View More
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Value Propositions */}
-      <section className="w-full py-16 bg-gray-50">
+      {/* Why Section */}
+      <section className="w-full py-16 bg-gradient-to-br from-orange-50 to-yellow-50">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
-                </svg>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-5xl md:text-6xl font-serif italic mb-8">Why</h2>
+              <div className="space-y-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-full border-2 border-yellow-600 flex items-center justify-center flex-shrink-0">
+                    <span className="text-xl">✓</span>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg mb-1">Certified Lab Diamonds</h3>
+                    <p className="text-gray-600">IGI & SGL certified, ethically created</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-full border-2 border-yellow-600 flex items-center justify-center flex-shrink-0">
+                    <span className="text-xl">✓</span>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg mb-1">925 Sterling Silver</h3>
+                    <p className="text-gray-600">Premium quality, hypoallergenic</p>
+                  </div>
+                </div>
               </div>
-              <h3 className="font-bold text-lg mb-2">Certified Lab Diamonds</h3>
-              <p className="text-gray-600">Ethically sourced brilliance</p>
             </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="w-32 h-32 rounded-full border-4 border-yellow-500 flex items-center justify-center bg-white">
+                <span className="text-sm text-center px-2">Quality</span>
               </div>
-              <h3 className="font-bold text-lg mb-2">925 Sterling Silver</h3>
-              <p className="text-gray-600">Premium quality silver</p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
+              <div className="w-32 h-32 rounded-full border-4 border-yellow-500 flex items-center justify-center bg-white">
+                <span className="text-sm text-center px-2">Certified</span>
               </div>
-              <h3 className="font-bold text-lg mb-2">Free Shipping</h3>
-              <p className="text-gray-600">Worldwide delivery</p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
-              <h3 className="font-bold text-lg mb-2">Lifetime Warranty</h3>
-              <p className="text-gray-600">Quality guaranteed</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="w-full py-20 bg-gradient-to-r from-gray-900 to-black text-white">
+      {/* For Men Who Live Different */}
+      <section className="w-full py-16 bg-black text-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="mb-8">
+            <h2 className="text-3xl md:text-4xl font-serif italic mb-2">For Men Who</h2>
+            <h2 className="text-3xl md:text-4xl font-serif italic mb-4">Live Different</h2>
+            <div className="flex items-center gap-2 text-yellow-500 text-sm">
+              <span>★★★★★</span>
+              <span>4.9/5 Rating</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {menProducts.slice(0, 4).map(product => (
+              <div key={product.id} className="bg-white text-black rounded-lg p-3">
+                <ProductCard product={product} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Products to Claim */}
+      <section className="w-full py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-serif italic text-gray-900 mb-2">
+              Products to Claim
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="flex flex-col items-center">
+                <div className="w-full aspect-square rounded-full bg-gray-200 mb-4 flex items-center justify-center relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-100"></div>
+                </div>
+                <button className="px-6 py-2 bg-yellow-500 text-black font-semibold rounded-full hover:bg-yellow-400 transition-all text-sm">
+                  CLAIM NOW
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Real People Real Shine */}
+      <section className="w-full py-16 bg-gradient-to-br from-yellow-50 to-orange-50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-serif italic text-gray-900">
+              Real People, Real Shine
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-white rounded-lg p-4 shadow-sm">
+                <div className="w-full aspect-square rounded-full bg-gray-200 mb-4"></div>
+                <p className="text-xs text-gray-600 mb-2">@diamantra_shine</p>
+                <p className="text-sm">Customer testimonial content here...</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-8">
+            <Link 
+              href="/reviews" 
+              className="inline-flex items-center gap-2 px-8 py-3 bg-yellow-500 text-black font-semibold rounded-full hover:bg-yellow-400 transition-all"
+            >
+              View More
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* As Seen In */}
+      <section className="w-full py-16 bg-black text-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-serif italic mb-2">As Seen In Leading Fashion</h2>
+            <h2 className="text-3xl md:text-4xl font-serif italic">& Lifestyle Magazines</h2>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center">
+            {['GRAZIA', 'FEMINA', 'VOGUE', 'BAZAAR', 'ELLE'].map((mag) => (
+              <div key={mag} className="bg-white rounded-lg p-6 text-center">
+                <h3 className="text-2xl font-serif text-black">{mag}</h3>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Customer Reviews */}
+      <section className="w-full py-16 bg-gradient-to-br from-orange-50 to-yellow-50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-serif italic text-gray-900">
+              Proof That Radiates The Good
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-white rounded-lg p-6 shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-gray-200"></div>
+                  <div>
+                    <p className="font-semibold">Customer Name</p>
+                    <div className="flex text-yellow-500 text-sm">★★★★★</div>
+                  </div>
+                </div>
+                <p className="text-sm text-gray-600">
+                  "Amazing quality and beautiful designs. The lab-grown diamonds sparkle just like natural ones!"
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="w-full py-16 bg-gradient-to-br from-gray-600 via-gray-500 to-gray-400 text-white">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6">Ready to Find Your Signature Piece?</h2>
-          <p className="text-gray-300 text-lg mb-8 max-w-2xl mx-auto">
-            Join thousands who have discovered the perfect balance of modern luxury and timeless elegance.
+          <h2 className="text-3xl md:text-4xl font-serif italic mb-6">Ready to Shine Up?</h2>
+          <p className="text-white/90 text-lg mb-8 max-w-2xl mx-auto">
+            Discover curated diamond jewelry in 925 sterling silver. Certified, ethical & delivered to your doorstep.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link 
               href="/products" 
-              className="px-8 py-3 bg-white text-black font-semibold rounded-full hover:bg-gray-100 transition-all duration-300"
+              className="px-8 py-3 bg-yellow-500 text-black font-semibold rounded-full hover:bg-yellow-400 transition-all duration-300"
             >
-              Shop Collection
-            </Link>
-            <Link 
-              href="/about" 
-              className="px-8 py-3 border-2 border-white text-white rounded-full hover:bg-white/10 transition-all duration-300"
-            >
-              Our Story
+              SHOP NOW
             </Link>
           </div>
         </div>
