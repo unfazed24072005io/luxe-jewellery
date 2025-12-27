@@ -1,20 +1,27 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where } from 'firebase/firestore';
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export default function AdminPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [editingId, setEditingId] = useState(null);
   
   // Admin panel states
   const [activeTab, setActiveTab] = useState('products');
   const [products, setProducts] = useState([]);
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  // File upload refs
+  const fileInputRefs = useRef([]);
+  const collectionFileInputRef = useRef(null);
 
   // Form states with additional fields
   const [productForm, setProductForm] = useState({
@@ -22,17 +29,18 @@ export default function AdminPage() {
     slug: '', 
     price: '', 
     category: 'earrings', 
-    gender: 'both', // New: men, women, both
+    gender: 'both', // men, women, both
     material: '925 Silver', 
     collection: '', 
     description: '', 
-    images: ['', '', '', ''], // Multiple images
+    images: [], // Array of uploaded image URLs
+    imageFiles: [], // Array of File objects for upload
     featured: false,
     inStock: true,
     sku: '',
     weight: '',
     dimensions: '',
-    style: '', // New: style field
+    style: '', // style field
     stones: '',
     careInstructions: ''
   });
@@ -42,15 +50,20 @@ export default function AdminPage() {
     slug: '', 
     description: '', 
     image: '',
-    gender: 'both', // New: who the collection is for
-    style: '', // New: collection style/theme
+    imageFile: null, // File object for upload
+    gender: 'both', // who the collection is for
+    style: '', // collection style/theme
     featured: false,
     products: [] // Array of product IDs in this collection
   });
 
   // Category and style options
   const categories = ['Earrings', 'Pendants', 'Bracelets', 'Rings', 'Chains', 'Charms', 'Studs'];
-  const genderOptions = ['men', 'women', 'both'];
+  const genderOptions = [
+    { value: 'men', label: 'For Men' },
+    { value: 'women', label: 'For Women' },
+    { value: 'both', label: 'For Men & Women' }
+  ];
   const styleOptions = ['Minimalist', 'Modern', 'Vintage', 'Statement', 'Everyday', 'Festival', 'Bridal'];
 
   useEffect(() => {
@@ -78,6 +91,26 @@ export default function AdminPage() {
     setLoading(false);
   };
 
+  // Upload image to Firebase Storage
+  const uploadImage = async (file) => {
+    if (!file) return null;
+    
+    try {
+      const storage = getStorage();
+      const timestamp = Date.now();
+      const fileName = `${timestamp}_${file.name.replace(/\s+/g, '_')}`;
+      const storageRef = ref(storage, `products/${fileName}`);
+      
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      return downloadURL;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Error uploading image. Please try again.');
+      return null;
+    }
+  };
+
   const handleLogin = (e) => {
     e.preventDefault();
     setError('');
@@ -96,6 +129,195 @@ export default function AdminPage() {
     setIsLoggedIn(false);
     setUsername('');
     setPassword('');
+  };
+
+  // Product CRUD
+  const handleProductSubmit = async (e) => {
+    e.preventDefault();
+    setUploading(true);
+    
+    try {
+      // Upload product images
+      const uploadedImageUrls = [];
+      for (const file of productForm.imageFiles) {
+        if (file) {
+          const url = await uploadImage(file);
+          if (url) uploadedImageUrls.push(url);
+        }
+      }
+
+      const data = { 
+        ...productForm,
+        price: parseFloat(productForm.price),
+        weight: parseFloat(productForm.weight) || 0,
+        featured: Boolean(productForm.featured),
+        inStock: Boolean(productForm.inStock),
+        createdAt: new Date().toISOString(),
+        images: [...productForm.images, ...uploadedImageUrls] // Combine existing and new images
+      };
+      
+      // Remove file objects from data before saving to Firestore
+      delete data.imageFiles;
+      
+      if (editingId) {
+        await updateDoc(doc(db, 'products', editingId), data);
+        alert('Product updated successfully!');
+      } else {
+        await addDoc(collection(db, 'products'), data);
+        alert('Product added successfully!');
+      }
+      resetProductForm();
+      fetchAllData();
+    } catch (error) {
+      console.error('Error saving product:', error);
+      alert('Error saving product. Check console.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const editProduct = (product) => {
+    setProductForm({
+      ...product,
+      images: product.images || [],
+      imageFiles: [],
+      price: product.price?.toString() || '',
+      weight: product.weight?.toString() || ''
+    });
+    setEditingId(product.id);
+  };
+
+  const deleteProduct = async (id) => {
+    if (!confirm('Are you sure you want to delete this product?')) return;
+    try {
+      await deleteDoc(doc(db, 'products', id));
+      alert('Product deleted successfully!');
+      fetchAllData();
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      alert('Error deleting product.');
+    }
+  };
+
+  const resetProductForm = () => {
+    setProductForm({
+      name: '', slug: '', price: '', category: 'earrings', gender: 'both',
+      material: '925 Silver', collection: '', description: '', 
+      images: [], imageFiles: [], featured: false, inStock: true,
+      sku: '', weight: '', dimensions: '', style: '', stones: '', careInstructions: ''
+    });
+    setEditingId(null);
+  };
+
+  // Handle product image file selection
+  const handleProductImageChange = (e, index) => {
+    const files = e.target.files;
+    if (files.length > 0) {
+      const newImageFiles = [...productForm.imageFiles];
+      const file = files[0];
+      
+      // Preview image
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const newImages = [...productForm.images];
+        if (index >= newImages.length) {
+          newImages.push(e.target.result);
+        } else {
+          newImages[index] = e.target.result;
+        }
+        setProductForm({...productForm, images: newImages});
+      };
+      reader.readAsDataURL(file);
+      
+      newImageFiles[index] = file;
+      setProductForm({...productForm, imageFiles: newImageFiles });
+    }
+  };
+
+  // Handle collection image file selection
+  const handleCollectionImageChange = (e) => {
+    const files = e.target.files;
+    if (files.length > 0) {
+      const file = files[0];
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        setCollectionForm({
+          ...collectionForm, 
+          image: e.target.result,
+          imageFile: file
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Collection CRUD
+  const handleCollectionSubmit = async (e) => {
+    e.preventDefault();
+    setUploading(true);
+    
+    try {
+      // Upload collection image if exists
+      let imageUrl = collectionForm.image;
+      if (collectionForm.imageFile) {
+        const url = await uploadImage(collectionForm.imageFile);
+        if (url) imageUrl = url;
+      }
+
+      const data = { 
+        ...collectionForm,
+        image: imageUrl,
+        featured: Boolean(collectionForm.featured),
+        createdAt: new Date().toISOString(),
+        products: collectionForm.products || []
+      };
+      
+      // Remove file object from data before saving to Firestore
+      delete data.imageFile;
+      
+      if (editingId) {
+        await updateDoc(doc(db, 'collections', editingId), data);
+        alert('Collection updated successfully!');
+      } else {
+        await addDoc(collection(db, 'collections'), data);
+        alert('Collection added successfully!');
+      }
+      resetCollectionForm();
+      fetchAllData();
+    } catch (error) {
+      console.error('Error saving collection:', error);
+      alert('Error saving collection.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const editCollection = (col) => {
+    setCollectionForm({
+      ...col,
+      products: col.products || []
+    });
+    setEditingId(col.id);
+  };
+
+  const deleteCollection = async (id) => {
+    if (!confirm('Are you sure you want to delete this collection?')) return;
+    try {
+      await deleteDoc(doc(db, 'collections', id));
+      alert('Collection deleted successfully!');
+      fetchAllData();
+    } catch (error) {
+      console.error('Error deleting collection:', error);
+    }
+  };
+
+  const resetCollectionForm = () => {
+    setCollectionForm({
+      name: '', slug: '', description: '', image: '',
+      imageFile: null, gender: 'both', style: '', featured: false, products: []
+    });
+    setEditingId(null);
   };
 
   // Login Page
@@ -167,120 +389,6 @@ export default function AdminPage() {
       </div>
     );
   }
-
-  // Product CRUD
-  const handleProductSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const data = { 
-        ...productForm, 
-        price: parseFloat(productForm.price),
-        weight: parseFloat(productForm.weight) || 0,
-        featured: Boolean(productForm.featured),
-        inStock: Boolean(productForm.inStock),
-        createdAt: new Date().toISOString(),
-        images: productForm.images.filter(img => img.trim() !== '')
-      };
-      
-      if (editingId) {
-        await updateDoc(doc(db, 'products', editingId), data);
-        alert('Product updated successfully!');
-      } else {
-        await addDoc(collection(db, 'products'), data);
-        alert('Product added successfully!');
-      }
-      resetProductForm();
-      fetchAllData();
-    } catch (error) {
-      console.error('Error saving product:', error);
-      alert('Error saving product. Check console.');
-    }
-  };
-
-  const editProduct = (product) => {
-    setProductForm({
-      ...product,
-      images: product.images || ['', '', '', ''],
-      price: product.price.toString(),
-      weight: product.weight?.toString() || ''
-    });
-    setEditingId(product.id);
-  };
-
-  const deleteProduct = async (id) => {
-    if (!confirm('Are you sure you want to delete this product?')) return;
-    try {
-      await deleteDoc(doc(db, 'products', id));
-      alert('Product deleted successfully!');
-      fetchAllData();
-    } catch (error) {
-      console.error('Error deleting product:', error);
-      alert('Error deleting product.');
-    }
-  };
-
-  const resetProductForm = () => {
-    setProductForm({
-      name: '', slug: '', price: '', category: 'earrings', gender: 'both',
-      material: '925 Silver', collection: '', description: '', 
-      images: ['', '', '', ''], featured: false, inStock: true,
-      sku: '', weight: '', dimensions: '', style: '', stones: '', careInstructions: ''
-    });
-    setEditingId(null);
-  };
-
-  // Collection CRUD
-  const handleCollectionSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const data = { 
-        ...collectionForm,
-        featured: Boolean(collectionForm.featured),
-        createdAt: new Date().toISOString(),
-        products: collectionForm.products || []
-      };
-      
-      if (editingId) {
-        await updateDoc(doc(db, 'collections', editingId), data);
-        alert('Collection updated successfully!');
-      } else {
-        await addDoc(collection(db, 'collections'), data);
-        alert('Collection added successfully!');
-      }
-      resetCollectionForm();
-      fetchAllData();
-    } catch (error) {
-      console.error('Error saving collection:', error);
-      alert('Error saving collection.');
-    }
-  };
-
-  const editCollection = (col) => {
-    setCollectionForm({
-      ...col,
-      products: col.products || []
-    });
-    setEditingId(col.id);
-  };
-
-  const deleteCollection = async (id) => {
-    if (!confirm('Are you sure you want to delete this collection?')) return;
-    try {
-      await deleteDoc(doc(db, 'collections', id));
-      alert('Collection deleted successfully!');
-      fetchAllData();
-    } catch (error) {
-      console.error('Error deleting collection:', error);
-    }
-  };
-
-  const resetCollectionForm = () => {
-    setCollectionForm({
-      name: '', slug: '', description: '', image: '',
-      gender: 'both', style: '', featured: false, products: []
-    });
-    setEditingId(null);
-  };
 
   if (loading) {
     return (
@@ -399,14 +507,15 @@ export default function AdminPage() {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Gender *</label>
                     <select
                       value={productForm.gender}
                       onChange={e => setProductForm({...productForm, gender: e.target.value})}
                       className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                      required
                     >
-                      {genderOptions.map(gender => (
-                        <option key={gender} value={gender}>{gender}</option>
+                      {genderOptions.map(option => (
+                        <option key={option.value} value={option.value}>{option.label}</option>
                       ))}
                     </select>
                   </div>
@@ -454,25 +563,70 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* Images */}
+                {/* Product Images - File Upload */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Product Images (URLs)</label>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {productForm.images.map((img, index) => (
-                      <input
-                        key={index}
-                        type="text"
-                        placeholder={`Image ${index + 1} URL`}
-                        value={img}
-                        onChange={e => {
-                          const newImages = [...productForm.images];
-                          newImages[index] = e.target.value;
-                          setProductForm({...productForm, images: newImages});
-                        }}
-                        className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                      />
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Product Images (Upload from computer)
+                  </label>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {[0, 1, 2, 3].map((index) => (
+                      <div key={index} className="relative">
+                        <input
+                          type="file"
+                          ref={el => fileInputRefs.current[index] = el}
+                          onChange={(e) => handleProductImageChange(e, index)}
+                          accept="image/*"
+                          className="hidden"
+                          id={`product-image-${index}`}
+                        />
+                        <label
+                          htmlFor={`product-image-${index}`}
+                          className="block w-full aspect-square border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-cyan-500 transition-colors overflow-hidden"
+                        >
+                          {productForm.images[index] ? (
+                            <div className="relative w-full h-full">
+                              <img
+                                src={productForm.images[index]}
+                                alt={`Product ${index + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  const newImages = [...productForm.images];
+                                  const newImageFiles = [...productForm.imageFiles];
+                                  newImages.splice(index, 1);
+                                  newImageFiles.splice(index, 1);
+                                  setProductForm({
+                                    ...productForm,
+                                    images: newImages,
+                                    imageFiles: newImageFiles
+                                  });
+                                }}
+                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                              <svg className="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                              <span className="text-xs">Upload Image {index + 1}</span>
+                            </div>
+                          )}
+                        </label>
+                      </div>
                     ))}
                   </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Upload up to 4 images. First image will be the main product image.
+                  </p>
                 </div>
 
                 {/* Additional Info */}
@@ -564,9 +718,22 @@ export default function AdminPage() {
                 <div className="flex gap-3 pt-4 border-t">
                   <button
                     type="submit"
-                    className="px-6 py-3 bg-cyan-600 text-white font-medium rounded-lg hover:bg-cyan-700 transition-colors"
+                    disabled={uploading}
+                    className={`px-6 py-3 font-medium rounded-lg transition-colors ${
+                      uploading
+                        ? 'bg-gray-400 text-white cursor-not-allowed'
+                        : 'bg-cyan-600 text-white hover:bg-cyan-700'
+                    }`}
                   >
-                    {editingId ? 'Update Product' : 'Add Product'}
+                    {uploading ? (
+                      <span className="flex items-center gap-2">
+                        <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Uploading...
+                      </span>
+                    ) : editingId ? 'Update Product' : 'Add Product'}
                   </button>
                   
                   {editingId && (
@@ -588,11 +755,14 @@ export default function AdminPage() {
                 <h3 className="text-lg font-bold text-gray-800">All Products ({products.length})</h3>
                 <div className="flex gap-2">
                   <span className="text-xs px-2 py-1 bg-cyan-100 text-cyan-800 rounded">Featured: {products.filter(p => p.featured).length}</span>
-                  <span className="text-xs px-2 py-1 bg-gray-100 text-gray-800 rounded">
+                  <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded">
                     Men: {products.filter(p => p.gender === 'men').length}
                   </span>
                   <span className="text-xs px-2 py-1 bg-pink-100 text-pink-800 rounded">
                     Women: {products.filter(p => p.gender === 'women').length}
+                  </span>
+                  <span className="text-xs px-2 py-1 bg-gray-100 text-gray-800 rounded">
+                    Both: {products.filter(p => p.gender === 'both').length}
                   </span>
                 </div>
               </div>
@@ -605,7 +775,7 @@ export default function AdminPage() {
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Gender</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
+                      <th className="px-4py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
                       <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
                     </tr>
                   </thead>
@@ -627,10 +797,10 @@ export default function AdminPage() {
                         </td>
                         <td className="px-4 py-3">${product.price}</td>
                         <td className="px-4 py-3">
-                          <span className="px-2 py-1 text-xs bg-gray-100 rounded">{product.category}</span>
+                          <span className="px-2 py-1 text-xs bg-gray-100 rounded capitalize">{product.category}</span>
                         </td>
                         <td className="px-4 py-3">
-                          <span className={`px-2 py-1 text-xs rounded ${
+                          <span className={`px-2 py-1 text-xs rounded capitalize ${
                             product.gender === 'men' ? 'bg-blue-100 text-blue-800' :
                             product.gender === 'women' ? 'bg-pink-100 text-pink-800' :
                             'bg-gray-100 text-gray-800'
@@ -709,14 +879,15 @@ export default function AdminPage() {
                 {/* Gender & Style */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Target Gender</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Target Gender *</label>
                     <select
                       value={collectionForm.gender}
                       onChange={e => setCollectionForm({...collectionForm, gender: e.target.value})}
                       className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                      required
                     >
-                      {genderOptions.map(gender => (
-                        <option key={gender} value={gender}>{gender}</option>
+                      {genderOptions.map(option => (
+                        <option key={option.value} value={option.value}>{option.label}</option>
                       ))}
                     </select>
                   </div>
@@ -736,28 +907,58 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* Image */}
+                {/* Image Upload */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Cover Image URL</label>
-                  <input
-                    type="text"
-                    placeholder="https://example.com/image.jpg"
-                    value={collectionForm.image}
-                    onChange={e => setCollectionForm({...collectionForm, image: e.target.value})}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                  />
-                  {collectionForm.image && (
-                    <div className="mt-2">
-                      <img 
-                        src={collectionForm.image} 
-                        alt="Preview" 
-                        className="w-32 h-32 rounded-lg object-cover border"
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                        }}
-                      />
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Cover Image *</label>
+                  <div className="mt-1 flex items-center gap-4">
+                    <input
+                      type="file"
+                      ref={collectionFileInputRef}
+                      onChange={handleCollectionImageChange}
+                      accept="image/*"
+                      className="hidden"
+                      id="collection-image"
+                    />
+                    <label
+                      htmlFor="collection-image"
+                      className="cursor-pointer"
+                    >
+                      <div className="w-40 h-40 border-2 border-dashed border-gray-300 rounded-lg overflow-hidden hover:border-cyan-500 transition-colors">
+                        {collectionForm.image ? (
+                          <div className="relative w-full h-full">
+                            <img
+                              src={collectionForm.image}
+                              alt="Collection preview"
+                              className="w-full h-full object-cover"
+                            />
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setCollectionForm({...collectionForm, image: '', imageFile: null});
+                              }}
+                              className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                            <svg className="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span className="text-sm">Upload Image</span>
+                          </div>
+                        )}
+                      </div>
+                    </label>
+                    <div>
+                      <p className="text-sm text-gray-600 mb-2">Upload a cover image for this collection</p>
+                      <p className="text-xs text-gray-500">Recommended: 1200x800px, JPG or PNG</p>
                     </div>
-                  )}
+                  </div>
                 </div>
 
                 {/* Description */}
@@ -773,26 +974,44 @@ export default function AdminPage() {
 
                 {/* Products in Collection */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Products in Collection</label>
-                  <div className="space-y-2">
-                    {products.map(product => (
-                      <label key={product.id} className="flex items-center gap-3">
-                        <input
-                          type="checkbox"
-                          checked={collectionForm.products?.includes(product.id) || false}
-                          onChange={(e) => {
-                            const newProducts = e.target.checked
-                              ? [...(collectionForm.products || []), product.id]
-                              : (collectionForm.products || []).filter(id => id !== product.id);
-                            setCollectionForm({...collectionForm, products: newProducts});
-                          }}
-                          className="rounded text-cyan-600"
-                        />
-                        <span className="text-sm text-gray-700">{product.name}</span>
-                        <span className="text-xs text-gray-500">(${product.price})</span>
-                      </label>
-                    ))}
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Add Products to Collection</label>
+                  <div className="max-h-60 overflow-y-auto border border-gray-200 rounded-lg p-4">
+                    {products.length === 0 ? (
+                      <p className="text-sm text-gray-500">No products available. Add products first.</p>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {products.map(product => (
+                          <label key={product.id} className="flex items-start gap-3 p-2 hover:bg-gray-50 rounded">
+                            <input
+                              type="checkbox"
+                              checked={collectionForm.products?.includes(product.id) || false}
+                              onChange={(e) => {
+                                const newProducts = e.target.checked
+                                  ? [...(collectionForm.products || []), product.id]
+                                  : (collectionForm.products || []).filter(id => id !== product.id);
+                                setCollectionForm({...collectionForm, products: newProducts});
+                              }}
+                              className="mt-1 rounded text-cyan-600"
+                            />
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                {product.images?.[0] && (
+                                  <img src={product.images[0]} alt="" className="w-8 h-8 rounded object-cover" />
+                                )}
+                                <div>
+                                  <div className="text-sm font-medium text-gray-900">{product.name}</div>
+                                  <div className="text-xs text-gray-500">${product.price} • {product.gender}</div>
+                                </div>
+                              </div>
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                    )}
                   </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    {collectionForm.products?.length || 0} products selected
+                  </p>
                 </div>
 
                 {/* Featured */}
@@ -812,9 +1031,22 @@ export default function AdminPage() {
                 <div className="flex gap-3 pt-4 border-t">
                   <button
                     type="submit"
-                    className="px-6 py-3 bg-cyan-600 text-white font-medium rounded-lg hover:bg-cyan-700 transition-colors"
+                    disabled={uploading || !collectionForm.image}
+                    className={`px-6 py-3 font-medium rounded-lg transition-colors ${
+                      uploading || !collectionForm.image
+                        ? 'bg-gray-400 text-white cursor-not-allowed'
+                        : 'bg-cyan-600 text-white hover:bg-cyan-700'
+                    }`}
                   >
-                    {editingId ? 'Update Collection' : 'Create Collection'}
+                    {uploading ? (
+                      <span className="flex items-center gap-2">
+                        <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Uploading...
+                      </span>
+                    ) : editingId ? 'Update Collection' : 'Create Collection'}
                   </button>
                   
                   {editingId && (
@@ -865,7 +1097,7 @@ export default function AdminPage() {
                           <span className="text-sm text-gray-700">{collection.products?.length || 0} products</span>
                         </td>
                         <td className="px-4 py-3">
-                          <span className={`px-2 py-1 text-xs rounded ${
+                          <span className={`px-2 py-1 text-xs rounded capitalize ${
                             collection.gender === 'men' ? 'bg-blue-100 text-blue-800' :
                             collection.gender === 'women' ? 'bg-pink-100 text-pink-800' :
                             'bg-gray-100 text-gray-800'
