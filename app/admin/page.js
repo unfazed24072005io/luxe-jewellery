@@ -57,7 +57,6 @@ export default function AdminPage() {
     products: [] // Array of product IDs in this collection
   });
 
-  const [editingId, setEditingId] = useState(null);
 const fetchAllData = async () => {
     setLoading(true);
     try {
