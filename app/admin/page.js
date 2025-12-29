@@ -154,7 +154,6 @@ const fetchAllData = async () => {
     setPassword('');
   };
 
-<<<<<<< HEAD
   // Login Page - Compact & Professional
   if (!isLoggedIn) {
     return (
@@ -230,8 +229,6 @@ const fetchAllData = async () => {
   // ADMIN PANEL FUNCTIONS
   
 
-=======
->>>>>>> b8fedfa3ef707d02e29a0015bee0c48cadc1e406
   // Product CRUD
   const handleProductSubmit = async (e) => {
     e.preventDefault();
