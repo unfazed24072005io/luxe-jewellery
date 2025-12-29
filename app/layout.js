@@ -39,11 +39,8 @@ export default function RootLayout({ children }) {
                 {/* Brand Column */}
                 <div className="space-y-4">
                   <div>
-<<<<<<< HEAD
                     <h2 className="text-3xl font-bold text-yellow-500 mb-2">DIAMANTRA</h2>
-=======
                     <h2 className="text-3xl font-bold text-yellow-500 mb-2">DiaMantra</h2>
->>>>>>> b8fedfa3ef707d02e29a0015bee0c48cadc1e406
                     <p className="text-sm tracking-widest text-yellow-400">FINE JEWELLERY</p>
                   </div>
                   <p className="text-gray-400 text-sm">
