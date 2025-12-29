@@ -39,7 +39,11 @@ export default function RootLayout({ children }) {
                 {/* Brand Column */}
                 <div className="space-y-4">
                   <div>
+<<<<<<< HEAD
                     <h2 className="text-3xl font-bold text-yellow-500 mb-2">DIAMANTRA</h2>
+=======
+                    <h2 className="text-3xl font-bold text-yellow-500 mb-2">DiaMantra</h2>
+>>>>>>> b8fedfa3ef707d02e29a0015bee0c48cadc1e406
                     <p className="text-sm tracking-widest text-yellow-400">FINE JEWELLERY</p>
                   </div>
                   <p className="text-gray-400 text-sm">
@@ -53,30 +57,23 @@ export default function RootLayout({ children }) {
                   <ul className="space-y-2">
                     <li><a href="/products" className="text-gray-400 hover:text-yellow-400 transition-colors">Collections</a></li>
                     <li><a href="/about" className="text-gray-400 hover:text-yellow-400 transition-colors">About Us</a></li>
-                    <li><a href="/craftsmanship" className="text-gray-400 hover:text-yellow-400 transition-colors">Craftsmanship</a></li>
+                    <li><a href="/products" className="text-gray-400 hover:text-yellow-400 transition-colors">Products</a></li>
                     <li><a href="/contact" className="text-gray-400 hover:text-yellow-400 transition-colors">Contact</a></li>
                   </ul>
                 </div>
-
-                {/* Services */}
-                <div>
-                  <h3 className="text-yellow-400 font-semibold mb-4">SERVICES</h3>
-                  <ul className="space-y-2">
-                    <li><a href="/custom" className="text-gray-400 hover:text-yellow-400 transition-colors">Custom Design</a></li>
-                    <li><a href="/repair" className="text-gray-400 hover:text-yellow-400 transition-colors">Repair</a></li>
-                    <li><a href="/shipping" className="text-gray-400 hover:text-yellow-400 transition-colors">Shipping</a></li>
-                    <li><a href="/appointment" className="text-gray-400 hover:text-yellow-400 transition-colors">Appointments</a></li>
-                  </ul>
-                </div>
-
                 {/* Contact Info */}
                 <div>
                   <h3 className="text-yellow-400 font-semibold mb-4">CONTACT</h3>
                   <div className="text-gray-400 text-sm space-y-2">
                     <p>28, Heritage Street</p>
                     <p>Mumbai 400001, India</p>
+<<<<<<< HEAD
                     <p>+91 99371 91669</p>
                     <p>info@diamantrajewellery.com</p>
+=======
+                    <p>+91 22 1234 5678</p>
+                    <p>info@diamantra.com</p>
+>>>>>>> b8fedfa3ef707d02e29a0015bee0c48cadc1e406
                   </div>
                 </div>
               </div>
@@ -87,12 +84,16 @@ export default function RootLayout({ children }) {
               {/* Bottom Bar */}
               <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
                 <div>
+<<<<<<< HEAD
                   © {new Date().getFullYear()} DIAMANTRA Jewellery. All rights reserved.
                 </div>
                 <div className="flex space-x-4 mt-2 md:mt-0">
                   <a href="/privacy" className="hover:text-yellow-400 transition-colors">Privacy</a>
                   <a href="/terms" className="hover:text-yellow-400 transition-colors">Terms</a>
                   <a href="/sitemap" className="hover:text-yellow-400 transition-colors">Sitemap</a>
+=======
+                  © {new Date().getFullYear()} DiaMantra. All rights reserved.
+>>>>>>> b8fedfa3ef707d02e29a0015bee0c48cadc1e406
                 </div>
               </div>
             </div>

@@ -9,31 +9,29 @@ import Link from 'next/link';
 // Fetch functions remain the same
 async function getProducts() {
   try {
-    const snapshot = await getDocs(collection(db, 'products'));
-    return snapshot.docs.map(doc => ({ 
+    // First, get products
+    const productsSnapshot = await getDocs(collection(db, 'products'));
+    const products = productsSnapshot.docs.map(doc => ({ 
       id: doc.id, 
       ...doc.data(),
       slug: doc.data().slug || doc.data().name?.toLowerCase().replace(/\s+/g, '-') || doc.id
     }));
-  } catch (error) {
-    console.error('Error fetching products:', error);
-    return [];
-  }
-}
-
-export async function getAllCollections() {
-  try {
-    const collectionsRef = collection(db, 'collections');
-    const snapshot = await getDocs(collectionsRef);
-    return snapshot.docs.map(doc => ({ 
+    
+    // Then, get collections
+    const collectionsSnapshot = await getDocs(collection(db, 'collections'));
+    const collections = collectionsSnapshot.docs.map(doc => ({ 
       id: doc.id, 
       ...doc.data()
     }));
+    
+    return { products, collections };
   } catch (error) {
-    console.error('Error fetching collections:', error);
-    return [];
+    console.error('Error fetching data:', error);
+    return { products: [], collections: [] };
   }
 }
+
+
 
 // Static data arrays remain the same
 const navigationItems = [
@@ -354,9 +352,8 @@ const FeaturesSection = () => {
 
 // Main Component
 export default async function Diamantra() {
-  const products = await getProducts();
-  const collections = await getAllCollections();
   
+  const { products, collections } = await getProducts();
   const categories = collections.map((collection, index) => ({
     id: collection.id,
     name: collection.name || collection.title || `Collection ${index + 1}`,
