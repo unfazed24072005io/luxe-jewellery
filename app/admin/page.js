@@ -57,7 +57,6 @@ export default function AdminPage() {
     products: [] // Array of product IDs in this collection
   });
 
-<<<<<<< HEAD
   const [editingId, setEditingId] = useState(null);
 const fetchAllData = async () => {
     setLoading(true);
@@ -78,7 +77,6 @@ const fetchAllData = async () => {
     setLoading(false);
   };
   // Check login status on mount
-=======
   // Category and style options
   const categories = ['Earrings', 'Pendants', 'Bracelets', 'Rings', 'Chains', 'Charms', 'Studs'];
   const genderOptions = [
@@ -88,7 +86,6 @@ const fetchAllData = async () => {
   ];
   const styleOptions = ['Minimalist', 'Modern', 'Vintage', 'Statement', 'Everyday', 'Festival', 'Bridal'];
 
->>>>>>> b8fedfa3ef707d02e29a0015bee0c48cadc1e406
   useEffect(() => {
     const loggedIn = localStorage.getItem('luxe_admin_logged_in');
     if (loggedIn === 'true') {
