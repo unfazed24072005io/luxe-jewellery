@@ -25,7 +25,7 @@ export default function Navbar() {
           <Link href="/" className="flex-shrink-0 group relative">
             <div className="relative">
               <h1 className="text-4xl font-serif font-bold text-yellow-500 drop-shadow-[0_0_15px_rgba(234,179,8,0.5)] group-hover:drop-shadow-[0_0_20px_rgba(234,179,8,0.7)] transition-all duration-500">
-                LUXE
+                DIAMANTRA
               </h1>
               <p className="text-xs tracking-[0.3em] text-yellow-300/90 mt-1 font-light">
                 FINE JEWELLERY
@@ -53,9 +53,7 @@ export default function Navbar() {
                 {/* Admin link gets special styling */}
                 {link.name === 'Admin' && (
                   <div className="absolute -top-1 -right-1">
-                    <span className="text-[10px] bg-red-500 text-white px-1.5 py-0.5 rounded-full animate-pulse">
-                      ADMIN
-                    </span>
+                    
                   </div>
                 )}
               </div>

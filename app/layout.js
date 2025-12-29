@@ -2,7 +2,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar"; // Import your fancy navbar
 
 export const metadata = {
-  title: "LUXE | Indian Haute Joaillerie",
+  title: "DIAMANTRA | Indian Haute Joaillerie",
   description: "Timeless luxury Indian jewellery handcrafted by master artisans. Heritage meets haute couture in every piece.",
 };
 
@@ -39,7 +39,7 @@ export default function RootLayout({ children }) {
                 {/* Brand Column */}
                 <div className="space-y-4">
                   <div>
-                    <h2 className="text-3xl font-bold text-yellow-500 mb-2">LUXE</h2>
+                    <h2 className="text-3xl font-bold text-yellow-500 mb-2">DIAMANTRA</h2>
                     <p className="text-sm tracking-widest text-yellow-400">FINE JEWELLERY</p>
                   </div>
                   <p className="text-gray-400 text-sm">
@@ -75,8 +75,8 @@ export default function RootLayout({ children }) {
                   <div className="text-gray-400 text-sm space-y-2">
                     <p>28, Heritage Street</p>
                     <p>Mumbai 400001, India</p>
-                    <p>+91 22 1234 5678</p>
-                    <p>info@luxejewellery.com</p>
+                    <p>+91 99371 91669</p>
+                    <p>info@diamantrajewellery.com</p>
                   </div>
                 </div>
               </div>
@@ -87,7 +87,7 @@ export default function RootLayout({ children }) {
               {/* Bottom Bar */}
               <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
                 <div>
-                  © {new Date().getFullYear()} LUXE Jewellery. All rights reserved.
+                  © {new Date().getFullYear()} DIAMANTRA Jewellery. All rights reserved.
                 </div>
                 <div className="flex space-x-4 mt-2 md:mt-0">
                   <a href="/privacy" className="hover:text-yellow-400 transition-colors">Privacy</a>
