@@ -64,13 +64,10 @@ export default function RootLayout({ children }) {
                   <div className="text-gray-400 text-sm space-y-2">
                     <p>28, Heritage Street</p>
                     <p>Mumbai 400001, India</p>
-<<<<<<< HEAD
                     <p>+91 99371 91669</p>
                     <p>info@diamantrajewellery.com</p>
-=======
                     <p>+91 22 1234 5678</p>
                     <p>info@diamantra.com</p>
->>>>>>> b8fedfa3ef707d02e29a0015bee0c48cadc1e406
                   </div>
                 </div>
               </div>
@@ -81,16 +78,13 @@ export default function RootLayout({ children }) {
               {/* Bottom Bar */}
               <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
                 <div>
-<<<<<<< HEAD
                   © {new Date().getFullYear()} DIAMANTRA Jewellery. All rights reserved.
                 </div>
                 <div className="flex space-x-4 mt-2 md:mt-0">
                   <a href="/privacy" className="hover:text-yellow-400 transition-colors">Privacy</a>
                   <a href="/terms" className="hover:text-yellow-400 transition-colors">Terms</a>
                   <a href="/sitemap" className="hover:text-yellow-400 transition-colors">Sitemap</a>
-=======
                   © {new Date().getFullYear()} DiaMantra. All rights reserved.
->>>>>>> b8fedfa3ef707d02e29a0015bee0c48cadc1e406
                 </div>
               </div>
             </div>
