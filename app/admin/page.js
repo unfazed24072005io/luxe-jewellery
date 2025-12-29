@@ -57,24 +57,7 @@ export default function AdminPage() {
     products: [] // Array of product IDs in this collection
   });
 
-const fetchAllData = async () => {
-    setLoading(true);
-    try {
-      const [productsSnap, collectionsSnap, blogsSnap] = await Promise.all([
-        getDocs(collection(db, 'products')),
-        getDocs(collection(db, 'collections')),
-        getDocs(collection(db, 'blogs'))
-      ]);
 
-      setProducts(productsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-      setCollections(collectionsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-      setBlogs(blogsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      alert('Error fetching data. Check console.');
-    }
-    setLoading(false);
-  };
   // Check login status on mount
   // Category and style options
   const categories = ['Earrings', 'Pendants', 'Bracelets', 'Rings', 'Chains', 'Charms', 'Studs'];
