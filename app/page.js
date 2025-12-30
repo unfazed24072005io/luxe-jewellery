@@ -365,7 +365,7 @@ export default async function Diamantra() {
   return (
     <div className="bg-white w-full relative">
       {/* 1. Hero Section */}
-      <section className="relative w-full min-h-[500px] md:h-[600px] bg-gray-900">
+      <section className="relative w-full min-h-[350px] md:h-[500px] bg-gray-900 top-[0px] bottom-[50px] py-20">
         <div className="absolute inset-0 bg-grey/70 z-0">
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/80 z-0"></div>
         </div>
@@ -623,7 +623,7 @@ export default async function Diamantra() {
           Minimal. Bold. Purposeful. Jewellery that speaks without shouting.
         </p>
         
-        <Link href="/products?category=men" className="inline-block group">
+        <Link href="/products" className="inline-block group">
           <Button className="relative w-[170px] h-[48px] bg-gradient-to-r from-[#d48b00] to-yellow-700 hover:from-yellow-700 hover:to-[#d48b00] rounded-[100px] p-0 transition-all duration-500 hover:scale-105 group-hover:shadow-[0_0_30px_rgba(212,139,0,0.3)]">
             <div className="absolute inset-1 rounded-[100px] border-[1px] border-solid border-yellow-400/50 group-hover:border-yellow-400 transition-all duration-500"></div>
             <span className="relative z-10 [font-family:'Inter',Helvetica] font-semibold text-white text-sm tracking-[0.5px] flex items-center gap-2">
@@ -644,7 +644,7 @@ export default async function Diamantra() {
           {mensCategories.map((category, index) => (
             <Link 
               key={index} 
-              href={`/products?category=men&type=${category.title.toLowerCase()}`}
+              href={`/products`}
               className="group"
             >
               <div className="relative">

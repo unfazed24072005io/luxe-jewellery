@@ -25,7 +25,6 @@ export default function Navbar() {
           <Link href="/" className="flex-shrink-0 group relative">
             <div className="relative">
               <h1 className="text-4xl font-serif font-bold text-yellow-500 drop-shadow-[0_0_15px_rgba(234,179,8,0.5)] group-hover:drop-shadow-[0_0_20px_rgba(234,179,8,0.7)] transition-all duration-500">
-                DIAMANTRA
                 DiaMantra
               </h1>
               <p className="text-xs tracking-[0.3em] text-yellow-300/90 mt-1 font-light">
