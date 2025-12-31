@@ -152,72 +152,73 @@ export default async function ProductsPage() {
 
       {/* "Rings That Feel Like You" Section - Below Products */}
       <section className="w-full bg-gradient-to-br from-gray-50 to-white py-12 md:py-16">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="relative bg-gray-100 rounded-[25px] p-8 md:p-12 border border-gray-200 shadow-lg">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              {/* Left Column - Content */}
-              <div className="space-y-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-0.5 h-12 bg-red-600"></div>
-                  <h2 className="[font-family:'Rische-Demo',Helvetica] font-normal text-black text-3xl md:text-4xl lg:text-[48px] tracking-[-1px] md:tracking-[-2px] leading-tight">
-                    Rings That Feel Like You
-                  </h2>
-                </div>
-                
-                <p className="[font-family:'Inter',Helvetica] font-medium text-gray-700 text-lg md:text-xl leading-relaxed">
-                  Minimal, meaningful, and made to last.<br />
-                  Discover silver rings crafted for everyday elegance —<br />
-                  with lab-grown brilliance and conscious design.
-                </p>
-              </div>
-
-              {/* Right Column - Image/Placeholder */}
-              
-            </div>
-
-            {/* SHOP NOW Button in Grey Box Below */}
-            <div className="mt-10 pt-8 border-t border-gray-300">
-              <div className="bg-gray-800 rounded-[15px] p-6 md:p-8 max-w-md mx-auto">
-                <Link href="/products?category=rings">
-                  <Button className="relative w-full h-[50px] bg-black hover:bg-gray-900 rounded-[100px] p-0 transition-all duration-300 hover:scale-105 group">
-                    <div className="absolute inset-1 rounded-[100px] border-[0.8px] border-solid border-gray-600" />
-                    <span className="relative z-10 [font-family:'Inter',Helvetica] font-semibold text-white text-sm md:text-base tracking-[0.5px] flex items-center justify-center gap-2">
-                      SHOP NOW
-                      <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                      </svg>
-                    </span>
-                  </Button>
-                </Link>
-              </div>
-            </div>
+  <div className="max-w-7xl mx-auto px-4">
+    <div className="relative bg-gray-100 rounded-[25px] p-8 md:p-12 border border-gray-200 shadow-lg">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        
+        {/* Left Column - First text */}
+        <div className="space-y-6">
+          <div className="flex items-center gap-4">
+            <div className="w-0.5 h-12 bg-red-600"></div>
+            <h2 className="[font-family:'Rische-Demo',Helvetica] font-normal text-black text-3xl md:text-4xl lg:text-[48px] tracking-[-1px] md:tracking-[-2px] leading-tight">
+              Rings That Feel Like You
+            </h2>
           </div>
         </div>
-      </section>
 
+        {/* Right Column - Next text */}
+        <div className="space-y-6">
+          <p className="[font-family:'Inter',Helvetica] font-medium text-gray-700 text-lg md:text-xl leading-relaxed text-right">
+            Minimal, meaningful, and made to last.<br />
+            Discover silver rings crafted for everyday elegance —<br />
+            with lab-grown brilliance and conscious design.
+          </p>
+        </div>
+
+      </div>
+
+      {/* Gold SHOP NOW Button aligned right */}
+      <div className="mt-10 pt-8 border-t border-gray-300">
+        <div className="bg-gray-800 rounded-[15px] p-6 md:p-8 max-w-md ml-auto">
+          <Link href="/products?category=rings">
+            <Button className="relative w-full h-[50px] bg-[#d48b00] hover:bg-[#c07f00] rounded-[100px] p-0 transition-all duration-300 hover:scale-105 group">
+              <div className="absolute top-1 left-1 w-[calc(100%-8px)] h-[42px] rounded-[100px] border-[0.8px] border-solid border-[#fdbe46]" />
+              <span className="relative z-10 [font-family:'Inter',Helvetica] font-semibold text-white text-sm md:text-base tracking-[0.5px] flex items-center justify-center gap-2">
+                SHOP NOW
+                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </span>
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
       {/* Ready to Glow Up Section - Exactly like Home */}
       <section className="w-full bg-color-3 py-16 md:py-20">
-        <div className="w-full bg-color-3 py-8 md:py-[66px]">
-          <div className="flex flex-col items-center gap-6 md:gap-[30px] w-full max-w-[491px] mx-auto px-4">
-            <div className="flex flex-col items-center gap-4 md:gap-6 w-full">
-              <h2 className="[font-family:'Rische-Demo',Helvetica] font-normal color-white text-4xl md:text-5xl lg:text-[60px] tracking-[-1px] md:tracking-[-2px] lg:tracking-[-3.60px] text-center leading-tight">
-                Ready to Glow Up?
-              </h2>
-              <p className="[font-family:'Inter',Helvetica] font-medium color-white text-base md:text-lg lg:text-xl text-center">
-                Thousands already have their sparkle. Time to get yours with Diamantra.
-              </p>
-            </div>
-            <Link href="/products">
-              <Button className="relative h-[42px] w-[165px] bg-[#d48b00] rounded-[100px] hover:bg-[#d48b00]/90">
-                <div className="absolute inset-1 rounded-[100px] border-[0.8px] border-solid border-[#fdbe46]" />
-                <span className="relative z-10 [font-family:'Inter',Helvetica] font-semibold text-white text-xs">Shop Now</span>
-                <div className="absolute top-[19px] left-0.5 w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
-                <div className="absolute top-[19px] left-[156px] w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
+  <div className="w-full bg-color-3 py-8 md:py-[66px]">
+    <div className="flex flex-col items-center gap-6 md:gap-[30px] w-full max-w-[491px] mx-auto px-4">
+      <div className="flex flex-col items-center gap-4 md:gap-6 w-full">
+        <h2 className="[font-family:'Rische-Demo',Helvetica] font-normal text-white text-4xl md:text-5xl lg:text-[60px] tracking-[-1px] md:tracking-[-2px] lg:tracking-[-3.60px] text-center leading-tight">
+          Ready to Glow Up?
+        </h2>
+        <p className="[font-family:'Inter',Helvetica] font-medium text-white text-base md:text-lg lg:text-xl text-center">
+          Thousands already have their sparkle. Time to get yours with Diamantra.
+        </p>
+      </div>
+      <Link href="/products">
+        <Button className="relative h-[42px] w-[165px] bg-[#d48b00] rounded-[100px] hover:bg-[#d48b00]/90">
+          <div className="absolute inset-1 rounded-[100px] border-[0.8px] border-solid border-[#fdbe46]" />
+          <span className="relative z-10 [font-family:'Inter',Helvetica] font-semibold text-white text-xs">Shop Now</span>
+          <div className="absolute top-[19px] left-0.5 w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
+          <div className="absolute top-[19px] left-[156px] w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
+        </Button>
+      </Link>
+    </div>
+  </div>
+</section>
     </div>
   );
 }
