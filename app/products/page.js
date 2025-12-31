@@ -114,10 +114,10 @@ export default function ProductsPage() {
         <div className="relative z-10 px-4 h-full flex flex-col justify-center">
           <div className="max-w-7xl mx-auto w-full text-center">
             <h1 className="text-4xl md:text-5xl lg:text-[65px] [font-family:'Rische-Demo',Helvetica] font-normal text-white tracking-[-1px] md:tracking-[-3.90px] leading-tight">
-              Our Collection
+              Everyday Elegance Reimagined
             </h1>
             <p className="text-sm md:text-base [font-family:'Inter',Helvetica] font-semibold text-white tracking-[1px] md:tracking-[2.52px] mt-4">
-              LAB-GROWN BRILLIANCE MEETS TIMELESS SILVER ELEGANCE.
+              Home / Product
             </p>
           </div>
         </div>
