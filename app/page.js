@@ -535,63 +535,22 @@ export default async function Diamantra() {
 
       {/* 4. Video Section */}
       <section className="w-full px-4 md:px-8 lg:px-16 py-8 md:py-12">
-  <div className="max-w-7xl mx-auto">
-    <div className="relative w-full h-[300px] md:h-[470px] bg-color-3 rounded-[20px] overflow-hidden">
-      {/* YouTube jewellery video embed */}
-      <iframe
-        className="w-full h-full object-cover"
-        src="https://www.youtube.com/watch?v=bghqsXZpkGM"
-        title="Luxury Jewellery Showcase - Diamond Collection"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowFullScreen
-        frameBorder="0"
-        loading="lazy"
-      ></iframe>
-      
-      {/* Optional: Overlay with play button that disappears on click */}
-      <div 
-        id="video-overlay"
-        className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-t from-black/70 via-black/30 to-transparent cursor-pointer transition-opacity duration-500 hover:opacity-80"
-        onClick={(e) => {
-          const overlay = e.currentTarget;
-          overlay.style.opacity = '0';
-          setTimeout(() => {
-            overlay.style.display = 'none';
-          }, 500);
-          
-          // Force play if autoplay didn't work
-          const iframe = overlay.previousElementSibling;
-          if (iframe) {
-            const src = iframe.src;
-            if (!src.includes('autoplay=1')) {
-              iframe.src = src.replace('autoplay=0', 'autoplay=1');
-            }
-          }
-        }}
-      >
-        <div className="mb-4">
-          <img 
-            className="w-[70px] h-[100px] md:w-[98px] md:h-[98px] hover:scale-110 transition-transform duration-300" 
-            alt="Play button" 
-            src="/figmaAssets/group-1597880478.png" 
-          />
+        <div className="max-w-7xl mx-auto">
+          <div className="relative w-full h-[300px] md:h-[470px] bg-color-3 rounded-[20px] flex items-center justify-center overflow-hidden">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-[90%] md:w-[80%] h-[100%] bg-gradient-to-br from-gray-900 to-black rounded-lg shadow-2xl"></div>
+            </div>
+            <img 
+              className="absolute w-[70px] h-[100px] md:w-[98px] md:h-[98px] z-10 hover:scale-110 transition-transform duration-300 cursor-pointer" 
+              alt="Play button" 
+              src="/figmaAssets/group-1597880478.png" 
+            />
+            <h2 className="absolute bottom-0 md:bottom-0 left-6 md:left-80 [font-family:'Rische-Demo',Helvetica] font-normal text-BLACK text-xl md:text-3xl lg:text-[41px] tracking-[-1px] md:tracking-[-2.46px] drop-shadow-lg z-10">
+              3D Product Video — Exclusive Collection
+            </h2>
+          </div>
         </div>
-        <p className="text-white text-lg md:text-xl font-light tracking-wide mt-2">
-          Click to play
-        </p>
-      </div>
-      
-      <h2 className="absolute bottom-0 md:bottom-0 left-6 md:left-80 [font-family:'Rische-Demo',Helvetica] font-normal text-white text-xl md:text-3xl lg:text-[41px] tracking-[-1px] md:tracking-[-2.46px] drop-shadow-lg z-10">
-        3D Product Video — Exclusive Collection
-      </h2>
-    </div>
-    
-    {/* Video description (optional) */}
-    <div className="mt-4 text-center text-gray-600 text-sm">
-      <p>Showing: Luxury Diamond Jewellery Collection 2024</p>
-    </div>
-  </div>
-</section>
+      </section>
 
       {/* 5. Featured Products */}
       <section className="w-full px-4 md:px-8 lg:px-16 py-8 md:py-12">
