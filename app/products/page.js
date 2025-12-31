@@ -59,7 +59,9 @@ export default async function ProductsPage() {
               </div>
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-[200px] h-[200px] md:w-[300px] md:h-[300px] rounded-full bg-gradient-to-br from-[#d48b00]/10 to-transparent flex items-center justify-center">
-                  <div className="text-4xl md:text-6xl">💍</div>
+                  <h2 className="[font-family:'Rische-Demo',Helvetica] font-normal text-black text-3xl md:text-4xl lg:text-[48px] tracking-[-1px] md:tracking-[-2px] leading-tight">
+                  Rings That Feel Like You
+                </h2>
                 </div>
               </div>
             </div>
@@ -68,9 +70,7 @@ export default async function ProductsPage() {
             <div className="space-y-6">
               <div className="flex items-center gap-4">
                 <div className="w-0.5 h-12 bg-red-600"></div>
-                <h2 className="[font-family:'Rische-Demo',Helvetica] font-normal text-black text-3xl md:text-4xl lg:text-[48px] tracking-[-1px] md:tracking-[-2px] leading-tight">
-                  Rings That Feel Like You
-                </h2>
+                
               </div>
               
               <p className="[font-family:'Inter',Helvetica] font-medium text-gray-700 text-lg md:text-xl leading-relaxed">
