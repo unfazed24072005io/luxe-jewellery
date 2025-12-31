@@ -12,35 +12,32 @@ export default function AdminPage() {
   const [error, setError] = useState('');
   const [editingId, setEditingId] = useState(null);
   
-  // Admin panel states
   const [activeTab, setActiveTab] = useState('products');
   const [products, setProducts] = useState([]);
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
 
-  // File upload refs
   const fileInputRefs = useRef([]);
   const collectionFileInputRef = useRef(null);
 
-  // Form states with additional fields
   const [productForm, setProductForm] = useState({
     name: '', 
     slug: '', 
     price: '', 
     category: 'earrings', 
-    gender: 'both', // men, women, both
+    gender: 'both',
     material: '925 Silver', 
-    collection: '', 
+    collection: '', // This will store the collection SLUG
     description: '', 
-    images: [], // Array of uploaded image URLs
-    imageFiles: [], // Array of File objects for upload
+    images: [],
+    imageFiles: [],
     featured: false,
     inStock: true,
     sku: '',
     weight: '',
     dimensions: '',
-    style: '', // style field
+    style: '',
     stones: '',
     careInstructions: ''
   });
@@ -50,16 +47,13 @@ export default function AdminPage() {
     slug: '', 
     description: '', 
     image: '',
-    imageFile: null, // File object for upload
-    gender: 'both', // who the collection is for
-    style: '', // collection style/theme
+    imageFile: null,
+    gender: 'both',
+    style: '',
     featured: false,
-    products: [] // Array of product IDs in this collection
+    products: []
   });
 
-
-  // Check login status on mount
-  // Category and style options
   const categories = ['Earrings', 'Pendants', 'Bracelets', 'Rings', 'Chains', 'Charms', 'Studs'];
   const genderOptions = [
     { value: 'men', label: 'For Men' },
@@ -93,7 +87,6 @@ export default function AdminPage() {
     setLoading(false);
   };
 
-  // Upload image to Firebase Storage
   const uploadImage = async (file) => {
     if (!file) return null;
     
@@ -133,18 +126,217 @@ export default function AdminPage() {
     setPassword('');
   };
 
-  // Login Page - Compact & Professional
+  const handleProductSubmit = async (e) => {
+    e.preventDefault();
+    setUploading(true);
+    
+    try {
+      // Upload product images
+      const uploadedImageUrls = [];
+      for (const file of productForm.imageFiles) {
+        if (file) {
+          const url = await uploadImage(file);
+          if (url) uploadedImageUrls.push(url);
+        }
+      }
+
+      // CRITICAL: Get collection slug instead of name
+      let collectionSlug = productForm.collection;
+      if (collectionSlug) {
+        // If collection is selected from dropdown (it contains name), find its slug
+        const selectedCollection = collections.find(col => col.name === collectionSlug);
+        if (selectedCollection) {
+          collectionSlug = selectedCollection.slug; // Use slug, not name
+        }
+      }
+
+      const data = { 
+        ...productForm,
+        collection: collectionSlug, // Store slug here
+        price: parseFloat(productForm.price),
+        weight: parseFloat(productForm.weight) || 0,
+        featured: Boolean(productForm.featured),
+        inStock: Boolean(productForm.inStock),
+        createdAt: new Date().toISOString(),
+        images: [...productForm.images, ...uploadedImageUrls]
+      };
+      
+      delete data.imageFiles;
+      
+      if (editingId) {
+        await updateDoc(doc(db, 'products', editingId), data);
+        alert('Product updated successfully!');
+      } else {
+        await addDoc(collection(db, 'products'), data);
+        alert('Product added successfully!');
+      }
+      resetProductForm();
+      fetchAllData();
+    } catch (error) {
+      console.error('Error saving product:', error);
+      alert('Error saving product. Check console.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const editProduct = (product) => {
+    // When editing, find the collection name from slug
+    let collectionName = '';
+    if (product.collection) {
+      const productCollection = collections.find(col => col.slug === product.collection);
+      if (productCollection) {
+        collectionName = productCollection.name;
+      }
+    }
+
+    setProductForm({
+      ...product,
+      collection: collectionName, // Show name in dropdown
+      images: product.images || [],
+      imageFiles: [],
+      price: product.price?.toString() || '',
+      weight: product.weight?.toString() || ''
+    });
+    setEditingId(product.id);
+  };
+
+  const deleteProduct = async (id) => {
+    if (!confirm('Are you sure you want to delete this product?')) return;
+    try {
+      await deleteDoc(doc(db, 'products', id));
+      alert('Product deleted successfully!');
+      fetchAllData();
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      alert('Error deleting product.');
+    }
+  };
+
+  const resetProductForm = () => {
+    setProductForm({
+      name: '', slug: '', price: '', category: 'earrings', gender: 'both',
+      material: '925 Silver', collection: '', description: '', 
+      images: [], imageFiles: [], featured: false, inStock: true,
+      sku: '', weight: '', dimensions: '', style: '', stones: '', careInstructions: ''
+    });
+    setEditingId(null);
+  };
+
+  const handleProductImageChange = (e, index) => {
+    const files = e.target.files;
+    if (files.length > 0) {
+      const newImageFiles = [...productForm.imageFiles];
+      const file = files[0];
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const newImages = [...productForm.images];
+        if (index >= newImages.length) {
+          newImages.push(e.target.result);
+        } else {
+          newImages[index] = e.target.result;
+        }
+        setProductForm({...productForm, images: newImages});
+      };
+      reader.readAsDataURL(file);
+      
+      newImageFiles[index] = file;
+      setProductForm({...productForm, imageFiles: newImageFiles });
+    }
+  };
+
+  const handleCollectionImageChange = (e) => {
+    const files = e.target.files;
+    if (files.length > 0) {
+      const file = files[0];
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        setCollectionForm({
+          ...collectionForm, 
+          image: e.target.result,
+          imageFile: file
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCollectionSubmit = async (e) => {
+    e.preventDefault();
+    setUploading(true);
+    
+    try {
+      let imageUrl = collectionForm.image;
+      if (collectionForm.imageFile) {
+        const url = await uploadImage(collectionForm.imageFile);
+        if (url) imageUrl = url;
+      }
+
+      const data = { 
+        ...collectionForm,
+        image: imageUrl,
+        featured: Boolean(collectionForm.featured),
+        createdAt: new Date().toISOString(),
+        products: collectionForm.products || []
+      };
+      
+      delete data.imageFile;
+      
+      if (editingId) {
+        await updateDoc(doc(db, 'collections', editingId), data);
+        alert('Collection updated successfully!');
+      } else {
+        await addDoc(collection(db, 'collections'), data);
+        alert('Collection added successfully!');
+      }
+      resetCollectionForm();
+      fetchAllData();
+    } catch (error) {
+      console.error('Error saving collection:', error);
+      alert('Error saving collection.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const editCollection = (col) => {
+    setCollectionForm({
+      ...col,
+      products: col.products || []
+    });
+    setEditingId(col.id);
+  };
+
+  const deleteCollection = async (id) => {
+    if (!confirm('Are you sure you want to delete this collection?')) return;
+    try {
+      await deleteDoc(doc(db, 'collections', id));
+      alert('Collection deleted successfully!');
+      fetchAllData();
+    } catch (error) {
+      console.error('Error deleting collection:', error);
+    }
+  };
+
+  const resetCollectionForm = () => {
+    setCollectionForm({
+      name: '', slug: '', description: '', image: '',
+      imageFile: null, gender: 'both', style: '', featured: false, products: []
+    });
+    setEditingId(null);
+  };
+
   if (!isLoggedIn) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="w-full max-w-sm">
-          {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-3xl font-serif font-bold text-gray-900">LUXE</h1>
             <p className="text-gray-500 text-sm mt-1">Admin Dashboard</p>
           </div>
 
-          {/* Login Card */}
           <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-gray-800 mb-6">Sign in to continue</h2>
             
@@ -192,275 +384,10 @@ export default function AdminPage() {
                 Sign In
               </button>
             </form>
-
-           
           </div>
 
-          {/* Footer note */}
           <p className="text-center text-gray-400 text-xs mt-6">
             © 2025 LUXE Jewellery. Admin Access Only.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // ADMIN PANEL FUNCTIONS
-  
-
-  // Product CRUD
-  const handleProductSubmit = async (e) => {
-    e.preventDefault();
-    setUploading(true);
-    
-    try {
-      // Upload product images
-      const uploadedImageUrls = [];
-      for (const file of productForm.imageFiles) {
-        if (file) {
-          const url = await uploadImage(file);
-          if (url) uploadedImageUrls.push(url);
-        }
-      }
-
-      const data = { 
-        ...productForm,
-        price: parseFloat(productForm.price),
-        weight: parseFloat(productForm.weight) || 0,
-        featured: Boolean(productForm.featured),
-        inStock: Boolean(productForm.inStock),
-        createdAt: new Date().toISOString(),
-        images: [...productForm.images, ...uploadedImageUrls] // Combine existing and new images
-      };
-      
-      // Remove file objects from data before saving to Firestore
-      delete data.imageFiles;
-      
-      if (editingId) {
-        await updateDoc(doc(db, 'products', editingId), data);
-        alert('Product updated successfully!');
-      } else {
-        await addDoc(collection(db, 'products'), data);
-        alert('Product added successfully!');
-      }
-      resetProductForm();
-      fetchAllData();
-    } catch (error) {
-      console.error('Error saving product:', error);
-      alert('Error saving product. Check console.');
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const editProduct = (product) => {
-    setProductForm({
-      ...product,
-      images: product.images || [],
-      imageFiles: [],
-      price: product.price?.toString() || '',
-      weight: product.weight?.toString() || ''
-    });
-    setEditingId(product.id);
-  };
-
-  const deleteProduct = async (id) => {
-    if (!confirm('Are you sure you want to delete this product?')) return;
-    try {
-      await deleteDoc(doc(db, 'products', id));
-      alert('Product deleted successfully!');
-      fetchAllData();
-    } catch (error) {
-      console.error('Error deleting product:', error);
-      alert('Error deleting product.');
-    }
-  };
-
-  const resetProductForm = () => {
-    setProductForm({
-      name: '', slug: '', price: '', category: 'earrings', gender: 'both',
-      material: '925 Silver', collection: '', description: '', 
-      images: [], imageFiles: [], featured: false, inStock: true,
-      sku: '', weight: '', dimensions: '', style: '', stones: '', careInstructions: ''
-    });
-    setEditingId(null);
-  };
-
-  // Handle product image file selection
-  const handleProductImageChange = (e, index) => {
-    const files = e.target.files;
-    if (files.length > 0) {
-      const newImageFiles = [...productForm.imageFiles];
-      const file = files[0];
-      
-      // Preview image
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const newImages = [...productForm.images];
-        if (index >= newImages.length) {
-          newImages.push(e.target.result);
-        } else {
-          newImages[index] = e.target.result;
-        }
-        setProductForm({...productForm, images: newImages});
-      };
-      reader.readAsDataURL(file);
-      
-      newImageFiles[index] = file;
-      setProductForm({...productForm, imageFiles: newImageFiles });
-    }
-  };
-
-  // Handle collection image file selection
-  const handleCollectionImageChange = (e) => {
-    const files = e.target.files;
-    if (files.length > 0) {
-      const file = files[0];
-      const reader = new FileReader();
-      
-      reader.onload = (e) => {
-        setCollectionForm({
-          ...collectionForm, 
-          image: e.target.result,
-          imageFile: file
-        });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // Collection CRUD
-  const handleCollectionSubmit = async (e) => {
-    e.preventDefault();
-    setUploading(true);
-    
-    try {
-      // Upload collection image if exists
-      let imageUrl = collectionForm.image;
-      if (collectionForm.imageFile) {
-        const url = await uploadImage(collectionForm.imageFile);
-        if (url) imageUrl = url;
-      }
-
-      const data = { 
-        ...collectionForm,
-        image: imageUrl,
-        featured: Boolean(collectionForm.featured),
-        createdAt: new Date().toISOString(),
-        products: collectionForm.products || []
-      };
-      
-      // Remove file object from data before saving to Firestore
-      delete data.imageFile;
-      
-      if (editingId) {
-        await updateDoc(doc(db, 'collections', editingId), data);
-        alert('Collection updated successfully!');
-      } else {
-        await addDoc(collection(db, 'collections'), data);
-        alert('Collection added successfully!');
-      }
-      resetCollectionForm();
-      fetchAllData();
-    } catch (error) {
-      console.error('Error saving collection:', error);
-      alert('Error saving collection.');
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const editCollection = (col) => {
-    setCollectionForm({
-      ...col,
-      products: col.products || []
-    });
-    setEditingId(col.id);
-  };
-
-  const deleteCollection = async (id) => {
-    if (!confirm('Are you sure you want to delete this collection?')) return;
-    try {
-      await deleteDoc(doc(db, 'collections', id));
-      alert('Collection deleted successfully!');
-      fetchAllData();
-    } catch (error) {
-      console.error('Error deleting collection:', error);
-    }
-  };
-
-  const resetCollectionForm = () => {
-    setCollectionForm({
-      name: '', slug: '', description: '', image: '',
-      imageFile: null, gender: 'both', style: '', featured: false, products: []
-    });
-    setEditingId(null);
-  };
-
-  // Login Page
-  if (!isLoggedIn) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-2">
-              <span className="text-gray-800">Dia</span>
-              <span className="text-cyan-600">Mantra</span>
-            </h1>
-            <p className="text-gray-600">Admin Dashboard</p>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
-            <h2 className="text-xl font-bold text-gray-800 mb-6 text-center">Admin Login</h2>
-            
-            <form onSubmit={handleLogin}>
-              {error && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg">
-                  {error}
-                </div>
-              )}
-
-              <div className="space-y-5">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Username
-                  </label>
-                  <input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                    placeholder="Enter username"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                    placeholder="Enter password"
-                    required
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                className="w-full mt-6 bg-gray-900 text-white py-3.5 rounded-lg hover:bg-black transition-colors font-semibold shadow-md hover:shadow-lg"
-              >
-                Sign In
-              </button>
-            </form>
-          </div>
-
-          <p className="text-center text-gray-400 text-sm mt-8">
-            © 2025 DiaMantra. Admin Access Only.
           </p>
         </div>
       </div>
@@ -480,7 +407,6 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <div className="bg-white border-b shadow-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
@@ -502,7 +428,6 @@ export default function AdminPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Tabs */}
         <div className="flex border-b mb-8 overflow-x-auto">
           {['products', 'collections'].map(tab => (
             <button
@@ -519,7 +444,6 @@ export default function AdminPage() {
           ))}
         </div>
 
-        {/* Products Tab */}
         {activeTab === 'products' && (
           <div className="space-y-8">
             <div className="bg-white rounded-xl shadow border p-6">
@@ -528,7 +452,6 @@ export default function AdminPage() {
               </h2>
               
               <form onSubmit={handleProductSubmit} className="space-y-6">
-                {/* Basic Information */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Name *</label>
@@ -568,7 +491,6 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* Category & Gender */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
@@ -612,7 +534,6 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* Material & Collection */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Material</label>
@@ -634,13 +555,17 @@ export default function AdminPage() {
                     >
                       <option value="">No collection</option>
                       {collections.map(col => (
-                        <option key={col.id} value={col.slug}>{col.name}</option>
+                        <option key={col.id} value={col.name}>{col.name}</option>
                       ))}
                     </select>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Will be saved as slug: <code className="bg-gray-100 px-1">
+                        {collections.find(c => c.name === productForm.collection)?.slug || 'N/A'}
+                      </code>
+                    </p>
                   </div>
                 </div>
 
-                {/* Product Images - File Upload */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Product Images (Upload from computer)
@@ -706,7 +631,6 @@ export default function AdminPage() {
                   </p>
                 </div>
 
-                {/* Additional Info */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">SKU</label>
@@ -732,7 +656,6 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* Stones & Care */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Stones</label>
@@ -757,7 +680,6 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* Description */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
                   <textarea
@@ -768,7 +690,6 @@ export default function AdminPage() {
                   />
                 </div>
 
-                {/* Checkboxes */}
                 <div className="flex items-center gap-6">
                   <label className="flex items-center gap-2">
                     <input
@@ -791,7 +712,6 @@ export default function AdminPage() {
                   </label>
                 </div>
 
-                {/* Form Actions */}
                 <div className="flex gap-3 pt-4 border-t">
                   <button
                     type="submit"
@@ -826,7 +746,6 @@ export default function AdminPage() {
               </form>
             </div>
 
-            {/* Products List */}
             <div className="bg-white rounded-xl shadow border p-6">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-bold text-gray-800">All Products ({products.length})</h3>
@@ -852,7 +771,8 @@ export default function AdminPage() {
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Gender</th>
-                      <th className="px-4py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Collection</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
                       <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
                     </tr>
                   </thead>
@@ -883,6 +803,13 @@ export default function AdminPage() {
                             'bg-gray-100 text-gray-800'
                           }`}>
                             {product.gender}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="text-sm text-gray-700">
+                            {product.collection ? 
+                              collections.find(c => c.slug === product.collection)?.name || product.collection 
+                              : 'None'}
                           </span>
                         </td>
                         <td className="px-4 py-3">
@@ -917,7 +844,6 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* Collections Tab */}
         {activeTab === 'collections' && (
           <div className="space-y-8">
             <div className="bg-white rounded-xl shadow border p-6">
@@ -926,7 +852,6 @@ export default function AdminPage() {
               </h2>
               
               <form onSubmit={handleCollectionSubmit} className="space-y-6">
-                {/* Basic Information */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Name *</label>
@@ -953,7 +878,6 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* Gender & Style */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Target Gender *</label>
@@ -984,7 +908,6 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* Image Upload */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Cover Image *</label>
                   <div className="mt-1 flex items-center gap-4">
@@ -1038,7 +961,6 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* Description */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
                   <textarea
@@ -1049,49 +971,6 @@ export default function AdminPage() {
                   />
                 </div>
 
-                {/* Products in Collection */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Add Products to Collection</label>
-                  <div className="max-h-60 overflow-y-auto border border-gray-200 rounded-lg p-4">
-                    {products.length === 0 ? (
-                      <p className="text-sm text-gray-500">No products available. Add products first.</p>
-                    ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        {products.map(product => (
-                          <label key={product.id} className="flex items-start gap-3 p-2 hover:bg-gray-50 rounded">
-                            <input
-                              type="checkbox"
-                              checked={collectionForm.products?.includes(product.id) || false}
-                              onChange={(e) => {
-                                const newProducts = e.target.checked
-                                  ? [...(collectionForm.products || []), product.id]
-                                  : (collectionForm.products || []).filter(id => id !== product.id);
-                                setCollectionForm({...collectionForm, products: newProducts});
-                              }}
-                              className="mt-1 rounded text-cyan-600"
-                            />
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2">
-                                {product.images?.[0] && (
-                                  <img src={product.images[0]} alt="" className="w-8 h-8 rounded object-cover" />
-                                )}
-                                <div>
-                                  <div className="text-sm font-medium text-gray-900">{product.name}</div>
-                                  <div className="text-xs text-gray-500">${product.price} • {product.gender}</div>
-                                </div>
-                              </div>
-                            </div>
-                          </label>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <p className="text-xs text-gray-500 mt-2">
-                    {collectionForm.products?.length || 0} products selected
-                  </p>
-                </div>
-
-                {/* Featured */}
                 <div>
                   <label className="flex items-center gap-2">
                     <input
@@ -1104,7 +983,6 @@ export default function AdminPage() {
                   </label>
                 </div>
 
-                {/* Form Actions */}
                 <div className="flex gap-3 pt-4 border-t">
                   <button
                     type="submit"
@@ -1139,7 +1017,6 @@ export default function AdminPage() {
               </form>
             </div>
 
-            {/* Collections List */}
             <div className="bg-white rounded-xl shadow border p-6">
               <h3 className="text-lg font-bold text-gray-800 mb-6">All Collections ({collections.length})</h3>
               
@@ -1164,6 +1041,7 @@ export default function AdminPage() {
                             )}
                             <div>
                               <div className="font-medium text-gray-900">{collection.name}</div>
+                              <div className="text-xs text-gray-500">Slug: {collection.slug}</div>
                               {collection.featured && (
                                 <span className="text-xs text-cyan-600">★ Featured</span>
                               )}
@@ -1171,7 +1049,9 @@ export default function AdminPage() {
                           </div>
                         </td>
                         <td className="px-4 py-3">
-                          <span className="text-sm text-gray-700">{collection.products?.length || 0} products</span>
+                          <span className="text-sm text-gray-700">
+                            {products.filter(p => p.collection === collection.slug).length} products
+                          </span>
                         </td>
                         <td className="px-4 py-3">
                           <span className={`px-2 py-1 text-xs rounded capitalize ${
