@@ -251,38 +251,7 @@ export default async function ProductDetailPage({ params }) {
       </div>
 
       {/* "Rings That Feel Like You" Section */}
-      <section className="w-full py-12 md:py-16">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="relative w-full h-[190px] bg-[#666666] rounded-[20px] p-6 md:p-8">
-            <div className="flex flex-col md:flex-row items-start justify-between h-full gap-4 md:gap-8">
-              <div className="md:w-1/2">
-                <h2 className="[font-family:'Rische-Demo',Helvetica] font-normal text-white text-2xl md:text-[39px] leading-[1.2] tracking-[-0.78px]">
-                  Jewelry That Feels Like You
-                </h2>
-              </div>
-              <div className="md:w-1/2 flex flex-col justify-between h-full">
-                <p className="[font-family:'Inter',Helvetica] font-normal text-white text-sm md:text-base leading-[1.5] mb-4">
-                  Minimal, meaningful, and made to last.<br />
-                  Discover jewelry crafted for everyday elegance —<br />
-                  with lab-grown brilliance and conscious design.
-                </p>
-                <div className="mt-auto">
-                  <Link href="/products">
-                    <Button className="relative w-[150px] h-[42px] bg-[#d48b00] rounded-[100px] hover:bg-[#c07f00] p-0 transition-all duration-300">
-                      <div className="absolute top-[4px] left-[4px] w-[142px] h-[34px] rounded-[100px] border-[0.8px] border-solid border-[#fdbe46]" />
-                      <span className="relative z-10 [font-family:'Inter',Helvetica] font-semibold text-white text-xs">
-                        Shop Now
-                      </span>
-                      <div className="absolute top-[19px] left-[2px] w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
-                      <div className="absolute top-[19px] left-[143px] w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      
 
       {/* "Ready to Glow Up" Section */}
       <section className="w-full relative h-[200px] md:h-[268px] bg-[#666666] py-8 md:py-0">
