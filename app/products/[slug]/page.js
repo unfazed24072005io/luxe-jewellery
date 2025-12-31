@@ -2,6 +2,7 @@ import { db } from '@/lib/firebase';
 import { collection, getDocs, query, where, limit } from 'firebase/firestore';
 import Link from 'next/link';
 import ProductCard from '@/components/ProductCard';
+import { Button } from '@/components/ui/button';
 
 async function getProduct(slug) {
   try {
@@ -33,10 +34,14 @@ export default async function ProductDetailPage({ params }) {
   
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-bold mb-4">Product Not Found</h1>
-          <Link href="/products" className="btn-primary">
+          <h1 className="text-4xl font-bold mb-4 text-gray-900">Product Not Found</h1>
+          <p className="text-gray-600 mb-6">The product you're looking for doesn't exist.</p>
+          <Link 
+            href="/products" 
+            className="inline-block px-6 py-3 bg-[#d48b00] text-white font-medium rounded-lg hover:bg-[#c07f00] transition-colors"
+          >
             Back to Products
           </Link>
         </div>
@@ -48,75 +53,194 @@ export default async function ProductDetailPage({ params }) {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-7xl mx-auto px-4 py-12">
+      {/* Hero Section */}
+      <section className="relative w-full min-h-[350px] md:h-[400px] bg-gradient-to-br from-gray-900 via-black to-gray-900 py-20">
+        <div className="absolute inset-0 bg-grey/70 z-0">
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/80 z-0"></div>
+        </div>
+        
+        <div className="relative z-10 px-4 h-full flex flex-col justify-center">
+          <div className="max-w-7xl mx-auto w-full text-center">
+            <h1 className="text-4xl md:text-5xl lg:text-[65px] [font-family:'Rische-Demo',Helvetica] font-normal text-white tracking-[-1px] md:tracking-[-3.90px] leading-tight">
+              {product.name}
+            </h1>
+            <p className="text-sm md:text-base [font-family:'Inter',Helvetica] font-semibold text-white tracking-[1px] md:tracking-[2.52px] mt-4">
+              Home / {product.category} / {product.name}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Product Details */}
+      <div className="max-w-7xl mx-auto px-4 py-12 md:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
-          {/* Product Image */}
-          <div className="bg-gray-100 aspect-square flex items-center justify-center">
-            {product.image ? (
-              <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-            ) : (
-              <div className="text-center text-gray-400">
-                <svg className="w-32 h-32 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <p>Product Image</p>
+          {/* Product Images */}
+          <div className="space-y-4">
+            {/* Main Image */}
+            <div className="relative bg-gradient-to-br from-gray-50 to-white rounded-[25px] overflow-hidden shadow-xl aspect-square flex items-center justify-center p-8">
+              {product.images && product.images[0] ? (
+                <img 
+                  src={product.images[0]} 
+                  alt={product.name} 
+                  className="w-full h-full object-contain transition-transform duration-500 hover:scale-105" 
+                />
+              ) : (
+                <div className="text-center text-gray-400">
+                  <div className="text-8xl mb-4">💎</div>
+                  <p className="text-lg">Product Image</p>
+                </div>
+              )}
+            </div>
+
+            {/* Thumbnail Images */}
+            {product.images && product.images.length > 1 && (
+              <div className="grid grid-cols-4 gap-4">
+                {product.images.slice(0, 4).map((img, index) => (
+                  <div 
+                    key={index} 
+                    className="relative bg-gray-100 rounded-[15px] overflow-hidden aspect-square cursor-pointer hover:opacity-80 transition-opacity"
+                  >
+                    <img 
+                      src={img} 
+                      alt={`${product.name} ${index + 1}`} 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
               </div>
             )}
           </div>
 
-          {/* Product Details */}
-          <div>
-            <h1 className="text-4xl font-serif font-bold mb-4">{product.name}</h1>
-            <p className="text-3xl text-yellow-600 font-bold mb-6">₹{product.price?.toLocaleString()}</p>
-            
-            <div className="mb-6">
-              <span className="inline-block bg-gray-200 px-3 py-1 text-sm text-gray-700 mr-2">
-                {product.category}
-              </span>
-              <span className="inline-block bg-gray-200 px-3 py-1 text-sm text-gray-700">
-                {product.material}
-              </span>
+          {/* Product Info */}
+          <div className="space-y-8">
+            {/* Title & Price */}
+            <div className="border-b border-gray-200 pb-6">
+              <h1 className="text-4xl md:text-5xl [font-family:'Rische-Demo',Helvetica] font-normal text-black mb-4">
+                {product.name}
+              </h1>
+              <div className="flex items-center gap-4">
+                <span className="text-3xl md:text-4xl [font-family:'Inter',Helvetica] font-bold text-[#d48b00]">
+                  ₹{product.price?.toLocaleString()}
+                </span>
+                {product.originalPrice && (
+                  <span className="text-xl text-gray-400 line-through">
+                    ₹{product.originalPrice?.toLocaleString()}
+                  </span>
+                )}
+              </div>
             </div>
 
-            <div className="prose mb-8">
-              <h3 className="text-lg font-semibold mb-2">Description</h3>
+            {/* Badges */}
+            <div className="flex flex-wrap gap-3">
+              <span className="px-4 py-2 bg-gray-100 text-gray-800 text-sm font-medium rounded-full border border-gray-200">
+                {product.category}
+              </span>
+              <span className="px-4 py-2 bg-gray-100 text-gray-800 text-sm font-medium rounded-full border border-gray-200">
+                {product.material}
+              </span>
+              {product.collection && (
+                <span className="px-4 py-2 bg-gray-100 text-gray-800 text-sm font-medium rounded-full border border-gray-200">
+                  {product.collection}
+                </span>
+              )}
+              {product.featured && (
+                <span className="px-4 py-2 bg-gradient-to-r from-[#d48b00]/20 to-yellow-100 text-[#d48b00] text-sm font-medium rounded-full border border-[#d48b00]/30">
+                  ★ Featured
+                </span>
+              )}
+            </div>
+
+            {/* Description */}
+            <div className="space-y-4">
+              <h3 className="text-xl [font-family:'Inter',Helvetica] font-semibold text-black">
+                Description
+              </h3>
               <p className="text-gray-700 leading-relaxed">
-                {product.description || 'A stunning piece from our collection, crafted with precision and attention to detail.'}
+                {product.description || 'A stunning piece from our collection, crafted with precision and attention to detail. This exquisite jewelry combines timeless elegance with modern design, perfect for any occasion.'}
               </p>
             </div>
 
-            <div className="mb-8">
-              <h3 className="text-lg font-semibold mb-2">Specifications</h3>
-              <ul className="space-y-2 text-gray-700">
-                <li className="flex justify-between border-b pb-2">
-                  <span>Material:</span>
-                  <span className="font-semibold">{product.material}</span>
-                </li>
-                <li className="flex justify-between border-b pb-2">
-                  <span>Category:</span>
-                  <span className="font-semibold">{product.category}</span>
-                </li>
-                <li className="flex justify-between border-b pb-2">
-                  <span>Collection:</span>
-                  <span className="font-semibold">{product.collection || 'N/A'}</span>
-                </li>
-              </ul>
+            {/* Specifications */}
+            <div className="space-y-4">
+              <h3 className="text-xl [font-family:'Inter',Helvetica] font-semibold text-black">
+                Specifications
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                  <span className="text-gray-600">Material:</span>
+                  <span className="font-medium text-black">{product.material}</span>
+                </div>
+                <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                  <span className="text-gray-600">Category:</span>
+                  <span className="font-medium text-black capitalize">{product.category}</span>
+                </div>
+                <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                  <span className="text-gray-600">Style:</span>
+                  <span className="font-medium text-black">{product.style || 'Contemporary'}</span>
+                </div>
+                <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                  <span className="text-gray-600">Collection:</span>
+                  <span className="font-medium text-black">{product.collection || 'General Collection'}</span>
+                </div>
+                {product.stones && (
+                  <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                    <span className="text-gray-600">Stones:</span>
+                    <span className="font-medium text-black">{product.stones}</span>
+                  </div>
+                )}
+                {product.weight && (
+                  <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                    <span className="text-gray-600">Weight:</span>
+                    <span className="font-medium text-black">{product.weight}g</span>
+                  </div>
+                )}
+              </div>
             </div>
 
-            <button className="btn-primary w-full mb-4">
-              ADD TO CART
-            </button>
-            <button className="btn-secondary w-full">
-              CONTACT FOR INQUIRY
-            </button>
+            {/* Care Instructions */}
+            {product.careInstructions && (
+              <div className="bg-gray-50 rounded-xl p-6">
+                <h4 className="text-lg font-semibold text-black mb-2">Care Instructions</h4>
+                <p className="text-gray-600 text-sm">{product.careInstructions}</p>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="space-y-4 pt-6">
+              <Link href={`/checkout?product=${product.slug}`} className="block">
+                <Button className="relative w-full h-[56px] bg-[#d48b00] rounded-[100px] hover:bg-[#c07f00] p-0 transition-all duration-300 group">
+                  <div className="absolute top-[4px] left-[4px] right-[4px] h-[48px] rounded-[100px] border-[0.8px] border-solid border-[#fdbe46]" />
+                  <span className="relative z-10 [font-family:'Inter',Helvetica] font-semibold text-white text-base tracking-[0.5px]">
+                    ADD TO CART
+                  </span>
+                  <div className="absolute top-[26px] left-[8px] w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
+                  <div className="absolute top-[26px] right-[8px] w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
+                </Button>
+              </Link>
+              
+              <Button className="w-full h-[56px] bg-black text-white rounded-[100px] hover:bg-gray-900 transition-colors border border-gray-800">
+                CONTACT FOR INQUIRY
+              </Button>
+            </div>
           </div>
         </div>
 
         {/* Related Products */}
         {relatedProducts.length > 0 && (
-          <div>
-            <h2 className="text-3xl font-serif font-bold text-center mb-4">You May Also Like</h2>
-            <div className="w-24 h-1 bg-yellow-600 mx-auto mb-12"></div>
+          <div className="mt-20">
+            <div className="flex items-center justify-between mb-12">
+              <div>
+                <h2 className="text-3xl md:text-4xl [font-family:'Rische-Demo',Helvetica] font-normal text-black mb-2">
+                  You May Also Like
+                </h2>
+                <p className="text-gray-600">Similar products you might love</p>
+              </div>
+              <Link href="/products">
+                <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                  View All Products
+                </Button>
+              </Link>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {relatedProducts.map(product => (
                 <ProductCard key={product.id} product={product} />
@@ -125,6 +249,66 @@ export default async function ProductDetailPage({ params }) {
           </div>
         )}
       </div>
+
+      {/* "Rings That Feel Like You" Section */}
+      <section className="w-full py-12 md:py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="relative w-full h-[190px] bg-[#666666] rounded-[20px] p-6 md:p-8">
+            <div className="flex flex-col md:flex-row items-start justify-between h-full gap-4 md:gap-8">
+              <div className="md:w-1/2">
+                <h2 className="[font-family:'Rische-Demo',Helvetica] font-normal text-white text-2xl md:text-[39px] leading-[1.2] tracking-[-0.78px]">
+                  Jewelry That Feels Like You
+                </h2>
+              </div>
+              <div className="md:w-1/2 flex flex-col justify-between h-full">
+                <p className="[font-family:'Inter',Helvetica] font-normal text-white text-sm md:text-base leading-[1.5] mb-4">
+                  Minimal, meaningful, and made to last.<br />
+                  Discover jewelry crafted for everyday elegance —<br />
+                  with lab-grown brilliance and conscious design.
+                </p>
+                <div className="mt-auto">
+                  <Link href="/products">
+                    <Button className="relative w-[150px] h-[42px] bg-[#d48b00] rounded-[100px] hover:bg-[#c07f00] p-0 transition-all duration-300">
+                      <div className="absolute top-[4px] left-[4px] w-[142px] h-[34px] rounded-[100px] border-[0.8px] border-solid border-[#fdbe46]" />
+                      <span className="relative z-10 [font-family:'Inter',Helvetica] font-semibold text-white text-xs">
+                        Shop Now
+                      </span>
+                      <div className="absolute top-[19px] left-[2px] w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
+                      <div className="absolute top-[19px] left-[143px] w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* "Ready to Glow Up" Section */}
+      <section className="w-full relative h-[200px] md:h-[268px] bg-[#666666] py-8 md:py-0">
+        <div className="h-full flex flex-col items-center justify-center gap-6 md:gap-[30px] px-4">
+          <div className="flex flex-col items-center gap-4 md:gap-[24px] max-w-[491px]">
+            <h2 className="[font-family:'Inter',Helvetica] font-semibold text-white text-2xl md:text-3xl lg:text-[34px] leading-[1.2] tracking-[-0.04em] text-center">
+              Ready to Glow Up?
+            </h2>
+            <p className="[font-family:'Inter',Helvetica] font-semibold text-white text-base md:text-lg lg:text-[20px] leading-[1.35] tracking-[-0.04em] text-center max-w-[644px]">
+              Thousands already have their sparkle. Time to get yours with Diamantra.
+            </p>
+          </div>
+          <div className="relative w-[150px] md:w-[163px] h-[42px]">
+            <Link href="/products">
+              <Button className="relative w-full h-full bg-[#d48b00] rounded-[100px] hover:bg-[#c07f00] p-0 transition-all duration-300">
+                <div className="absolute top-[4px] left-[4px] w-[calc(100%-8px)] h-[34px] rounded-[100px] border-[0.8px] border-solid border-[#fdbe46]" />
+                <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 [font-family:'Inter',Helvetica] font-semibold text-white text-xs">
+                  Shop Now
+                </span>
+                <div className="absolute top-[19px] left-[2px] w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
+                <div className="absolute top-[19px] right-[2px] w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
