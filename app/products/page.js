@@ -208,10 +208,10 @@ export default async function ProductsPage() {
         <div className="w-full bg-color-3 py-8 md:py-[66px]">
           <div className="flex flex-col items-center gap-6 md:gap-[30px] w-full max-w-[491px] mx-auto px-4">
             <div className="flex flex-col items-center gap-4 md:gap-6 w-full">
-              <h2 className="[font-family:'Rische-Demo',Helvetica] font-normal text-neutral-colorneutral-color-shade-1 text-4xl md:text-5xl lg:text-[60px] tracking-[-1px] md:tracking-[-2px] lg:tracking-[-3.60px] text-center leading-tight">
+              <h2 className="[font-family:'Rische-Demo',Helvetica] font-normal color-white text-4xl md:text-5xl lg:text-[60px] tracking-[-1px] md:tracking-[-2px] lg:tracking-[-3.60px] text-center leading-tight">
                 Ready to Glow Up?
               </h2>
-              <p className="[font-family:'Inter',Helvetica] font-medium text-neutral-colorneutral-color-shade-1 text-base md:text-lg lg:text-xl text-center">
+              <p className="[font-family:'Inter',Helvetica] font-medium color-white text-base md:text-lg lg:text-xl text-center">
                 Thousands already have their sparkle. Time to get yours with Diamantra.
               </p>
             </div>
