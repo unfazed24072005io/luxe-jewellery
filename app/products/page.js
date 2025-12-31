@@ -196,22 +196,41 @@ export default async function ProductsPage() {
   </div>
 </section>
       {/* Ready to Glow Up Section - Exactly like Home */}
-      <section className="w-full bg-color-3 py-16 md:py-20">
-  <div className="w-full bg-color-3 py-8 md:py-[66px]">
-    <div className="flex flex-col items-center gap-6 md:gap-[30px] w-full max-w-[491px] mx-auto px-4">
-      <div className="flex flex-col items-center gap-4 md:gap-6 w-full">
-        <h2 className="[font-family:'Rische-Demo',Helvetica] font-normal text-white text-4xl md:text-5xl lg:text-[60px] tracking-[-1px] md:tracking-[-2px] lg:tracking-[-3.60px] text-center leading-tight">
-          Ready to Glow Up?
-        </h2>
-        <p className="[font-family:'Inter',Helvetica] font-medium text-white text-base md:text-lg lg:text-xl text-center">
-          Thousands already have their sparkle. Time to get yours with Diamantra.
-        </p>
-      </div>
+      <section className="w-full relative h-[268px] bg-[#666666]">
+  {/* Container */}
+  <div className="absolute inset-0 flex flex-col items-center justify-center gap-[30px]">
+    
+    {/* Text Container */}
+    <div className="flex flex-col items-center gap-[24px] w-[491px]">
+      
+      {/* Heading */}
+      <h2 className="[font-family:'Inter',Helvetica] font-semibold text-white text-[34px] leading-[41px] tracking-[-0.04em] text-center">
+        Ready to Glow Up?
+      </h2>
+      
+      {/* Subtitle */}
+      <p className="[font-family:'Inter',Helvetica] font-semibold text-white text-[20px] leading-[27px] tracking-[-0.04em] text-center w-[644px]">
+        Thousands already have their sparkle. Time to get yours with Diamantra.
+      </p>
+    </div>
+
+    {/* Button Container */}
+    <div className="relative w-[163px] h-[42px]">
       <Link href="/products">
-        <Button className="relative h-[42px] w-[165px] bg-[#d48b00] rounded-[100px] hover:bg-[#d48b00]/90">
-          <div className="absolute inset-1 rounded-[100px] border-[0.8px] border-solid border-[#fdbe46]" />
-          <span className="relative z-10 [font-family:'Inter',Helvetica] font-semibold text-white text-xs">Shop Now</span>
-          <div className="absolute top-[19px] left-0.5 w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
+        <Button className="relative w-[163px] h-[42px] bg-[#d48b00] rounded-[100px] hover:bg-[#c07f00] p-0 transition-all duration-300">
+          
+          {/* Border */}
+          <div className="absolute top-[4px] left-[4px] w-[155px] h-[34px] rounded-[100px] border-[0.8px] border-solid border-[#fdbe46]" />
+          
+          {/* Text */}
+          <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 [font-family:'Inter',Helvetica] font-semibold text-white text-xs">
+            Shop Now
+          </span>
+          
+          {/* Left Dot */}
+          <div className="absolute top-[19px] left-[2px] w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
+          
+          {/* Right Dot */}
           <div className="absolute top-[19px] left-[156px] w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
         </Button>
       </Link>
