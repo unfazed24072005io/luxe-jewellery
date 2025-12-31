@@ -165,7 +165,7 @@ export default async function ProductsPage() {
 
           {/* Shop Now Button */}
           <div className="mt-auto">
-            <Link href="/products?category=rings">
+            <Link href="/products">
               <Button className="relative w-[150px] h-[42px] bg-[#d48b00] rounded-[100px] hover:bg-[#c07f00] p-0 transition-all duration-300">
                 {/* Outer Border */}
                 <div className="absolute top-[4px] left-[4px] w-[142px] h-[34px] rounded-[100px] border-[0.8px] border-solid border-[#fdbe46]" />
