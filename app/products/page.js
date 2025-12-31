@@ -151,76 +151,80 @@ export default async function ProductsPage() {
       </div>
 
       {/* "Rings That Feel Like You" Section - Below Products */}
-      <section className="w-full relative py-12 md:py-16">
+      {/* "Rings That Feel Like You" Section - Below Products */}
+<section className="w-full py-12 md:py-16">
   <div className="max-w-7xl mx-auto px-4">
     {/* Grey Rectangle Box */}
-    <div className="relative w-full h-[157px] bg-[#666666] rounded-[20px]">
+    <div className="relative w-full h-[157px] bg-[#666666] rounded-[20px] p-6 md:p-8">
       
-      {/* Left Text: "Rings That Feel Like You" */}
-      <div className="absolute left-[38px] md:left-[457px] top-[38px] md:top-[1961px]">
-        <h2 className="[font-family:'Rische-Demo',Helvetica] font-normal text-white text-3xl md:text-[39px] leading-[41px] tracking-[-0.78px]">
-          Rings That Feel Like You
-        </h2>
-      </div>
+      <div className="flex flex-col md:flex-row items-start justify-between h-full gap-4 md:gap-8">
+        {/* Left Text: "Rings That Feel Like You" */}
+        <div className="md:w-1/2">
+          <h2 className="[font-family:'Rische-Demo',Helvetica] font-normal text-white text-2xl md:text-[39px] leading-[1.2] tracking-[-0.78px]">
+            Rings That Feel Like You
+          </h2>
+        </div>
 
-      {/* Right Text Container */}
-      <div className="absolute left-[337px] md:left-[756px] top-[25px] md:top-[1948px] w-[358px]">
-        
-        {/* Right Text */}
-        <p className="[font-family:'Inter',Helvetica] font-normal text-white text-sm leading-[18px] mb-[19px]">
-          Minimal, meaningful, and made to last.<br />
-          Discover silver rings crafted for everyday elegance —<br />
-          with lab-grown brilliance and conscious design.
-        </p>
+        {/* Right Text Container */}
+        <div className="md:w-1/2 flex flex-col justify-between h-full">
+          {/* Right Text */}
+          <p className="[font-family:'Inter',Helvetica] font-normal text-white text-sm md:text-base leading-[1.5] mb-4">
+            Minimal, meaningful, and made to last.<br />
+            Discover silver rings crafted for everyday elegance —<br />
+            with lab-grown brilliance and conscious design.
+          </p>
 
-        {/* Shop Now Button */}
-        <Link href="/products?category=rings">
-          <Button className="relative w-[150px] h-[42px] bg-[#d48b00] rounded-[100px] hover:bg-[#c07f00] p-0 transition-all duration-300">
-            {/* Outer Border */}
-            <div className="absolute top-[4px] left-[4px] w-[142px] h-[34px] rounded-[100px] border-[0.8px] border-solid border-[#fdbe46]" />
-            
-            {/* Button Text */}
-            <span className="relative z-10 [font-family:'Inter',Helvetica] font-semibold text-white text-xs">
-              Shop Now
-            </span>
-            
-            {/* Left Dot */}
-            <div className="absolute top-[19px] left-[2px] w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
-            
-            {/* Right Dot */}
-            <div className="absolute top-[19px] left-[143px] w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
-          </Button>
-        </Link>
+          {/* Shop Now Button */}
+          <div className="mt-auto">
+            <Link href="/products?category=rings">
+              <Button className="relative w-[150px] h-[42px] bg-[#d48b00] rounded-[100px] hover:bg-[#c07f00] p-0 transition-all duration-300">
+                {/* Outer Border */}
+                <div className="absolute top-[4px] left-[4px] w-[142px] h-[34px] rounded-[100px] border-[0.8px] border-solid border-[#fdbe46]" />
+                
+                {/* Button Text */}
+                <span className="relative z-10 [font-family:'Inter',Helvetica] font-semibold text-white text-xs">
+                  Shop Now
+                </span>
+                
+                {/* Left Dot */}
+                <div className="absolute top-[19px] left-[2px] w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
+                
+                {/* Right Dot */}
+                <div className="absolute top-[19px] left-[143px] w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
+              </Button>
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
-      {/* Ready to Glow Up Section - Exactly like Home */}
-      <section className="w-full relative h-[268px] bg-[#666666]">
-  {/* Container */}
-  <div className="absolute inset-0 flex flex-col items-center justify-center gap-[30px]">
+
+{/* Ready to Glow Up Section - Exactly like Home */}
+<section className="w-full relative h-[200px] md:h-[268px] bg-[#666666] py-8 md:py-0">
+  <div className="h-full flex flex-col items-center justify-center gap-6 md:gap-[30px] px-4">
     
     {/* Text Container */}
-    <div className="flex flex-col items-center gap-[24px] w-[491px]">
+    <div className="flex flex-col items-center gap-4 md:gap-[24px] max-w-[491px]">
       
       {/* Heading */}
-      <h2 className="[font-family:'Inter',Helvetica] font-semibold text-white text-[34px] leading-[41px] tracking-[-0.04em] text-center">
+      <h2 className="[font-family:'Inter',Helvetica] font-semibold text-white text-2xl md:text-3xl lg:text-[34px] leading-[1.2] tracking-[-0.04em] text-center">
         Ready to Glow Up?
       </h2>
       
       {/* Subtitle */}
-      <p className="[font-family:'Inter',Helvetica] font-semibold text-white text-[20px] leading-[27px] tracking-[-0.04em] text-center w-[644px]">
+      <p className="[font-family:'Inter',Helvetica] font-semibold text-white text-base md:text-lg lg:text-[20px] leading-[1.35] tracking-[-0.04em] text-center max-w-[644px]">
         Thousands already have their sparkle. Time to get yours with Diamantra.
       </p>
     </div>
 
     {/* Button Container */}
-    <div className="relative w-[163px] h-[42px]">
+    <div className="relative w-[150px] md:w-[163px] h-[42px]">
       <Link href="/products">
-        <Button className="relative w-[163px] h-[42px] bg-[#d48b00] rounded-[100px] hover:bg-[#c07f00] p-0 transition-all duration-300">
+        <Button className="relative w-full h-full bg-[#d48b00] rounded-[100px] hover:bg-[#c07f00] p-0 transition-all duration-300">
           
           {/* Border */}
-          <div className="absolute top-[4px] left-[4px] w-[155px] h-[34px] rounded-[100px] border-[0.8px] border-solid border-[#fdbe46]" />
+          <div className="absolute top-[4px] left-[4px] w-[calc(100%-8px)] h-[34px] rounded-[100px] border-[0.8px] border-solid border-[#fdbe46]" />
           
           {/* Text */}
           <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 [font-family:'Inter',Helvetica] font-semibold text-white text-xs">
@@ -231,9 +235,12 @@ export default async function ProductsPage() {
           <div className="absolute top-[19px] left-[2px] w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
           
           {/* Right Dot */}
-          <div className="absolute top-[19px] left-[156px] w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
+          <div className="absolute top-[19px] right-[2px] w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
         </Button>
       </Link>
     </div>
   </div>
 </section>
+</div>
+)
+}
