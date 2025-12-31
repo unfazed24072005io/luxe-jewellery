@@ -21,32 +21,21 @@ export default async function ProductsPage() {
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <section className="relative w-full min-h-[350px] md:h-[400px] bg-gradient-to-br from-gray-900 via-black to-gray-900 py-20">
-        <div className="absolute inset-0 bg-grey/70 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/80 z-0"></div>
-        </div>
+  <div className="absolute inset-0 bg-grey/70 z-0">
+    <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/80 z-0"></div>
+  </div>
 
-        <div className="relative z-10 px-4 h-full flex flex-col justify-center">
-          <div className="max-w-7xl mx-auto w-full">
-            <h1 className="text-4xl md:text-5xl lg:text-[65px] [font-family:'Rische-Demo',Helvetica] font-normal text-white tracking-[-1px] md:tracking-[-3.90px] leading-tight">
-              Our Collection
-            </h1>
-            <p className="text-sm md:text-base [font-family:'Inter',Helvetica] font-semibold text-white tracking-[1px] md:tracking-[2.52px] mt-4">
-              LAB-GROWN BRILLIANCE MEETS TIMELESS SILVER ELEGANCE.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row items-center gap-4 mt-8">
-              <Link href="/collections">
-                <Button className="relative w-[165px] h-[42px] bg-[#d48b00] rounded-[100px] hover:bg-[#c07f00] p-0 transition-all duration-200">
-                  <div className="absolute top-1 left-1 w-[155px] h-[34px] rounded-[100px] border-[0.8px] border-solid border-[#fdbe46]" />
-                  <span className="relative z-10 [font-family:'Inter',Helvetica] font-semibold text-white text-xs">
-                    Shop the Collection
-                  </span>
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+  <div className="relative z-10 px-4 h-full flex flex-col justify-center">
+    <div className="max-w-7xl mx-auto w-full text-center">
+      <h1 className="text-4xl md:text-5xl lg:text-[65px] [font-family:'Rische-Demo',Helvetica] font-normal text-white tracking-[-1px] md:tracking-[-3.90px] leading-tight">
+        Our Collection
+      </h1>
+      <p className="text-sm md:text-base [font-family:'Inter',Helvetica] font-semibold text-white tracking-[1px] md:tracking-[2.52px] mt-4">
+        LAB-GROWN BRILLIANCE MEETS TIMELESS SILVER ELEGANCE.
+      </p>
+    </div>
+  </div>
+</section>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-12">
