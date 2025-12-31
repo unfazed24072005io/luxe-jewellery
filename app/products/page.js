@@ -75,8 +75,8 @@ export default async function ProductsPage() {
                 <h4 className="font-semibold mb-2 text-sm text-gray-700">PRICE RANGE</h4>
                 <input type="range" min="0" max="10000" className="w-full" />
                 <div className="flex justify-between text-xs text-gray-600 mt-2">
-                  <span>$0</span>
-                  <span>$10,000+</span>
+                  <span>₹0</span>
+                  <span>₹10,000+</span>
                 </div>
               </div>
             </div>
