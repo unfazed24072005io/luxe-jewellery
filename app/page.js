@@ -232,8 +232,8 @@ const CallToActionSection = ({ products }) => {
                           </span>
                         )}
                         <span className="text-lg md:text-xl [font-family:'Inter',Helvetica] font-bold text-color-1">
-                          {product.price}
-                        </span>
+  ₹{product.price}
+</span>
                       </div>
                       
                       <Button 
