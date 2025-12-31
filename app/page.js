@@ -299,13 +299,14 @@ const StepsSection = () => {
           </div>
         </div>
 
-        <div className="w-full flex justify-center bg-color-3 py-8 md:py-[66px]">
-          <div className="flex flex-col items-center gap-6 md:gap-[30px] w-full max-w-[491px] px-4">
+        {/* Ready to Glow Up Section - Matching the grey version */}
+        <div className="w-full bg-[#666666] py-8 md:py-[66px]">
+          <div className="flex flex-col items-center gap-6 md:gap-[30px] w-full max-w-[491px] mx-auto px-4">
             <div className="flex flex-col items-center gap-4 md:gap-6 w-full">
-              <h2 className="font-INTER-SEMI-BOLD-h2-semi-bold-34px font-[number:var(--INTER-SEMI-BOLD-h2-semi-bold-34px-font-weight)] text-neutral-colorneutral-color-shade-1 text-2xl md:text-3xl lg:text-[length:var(--INTER-SEMI-BOLD-h2-semi-bold-34px-font-size)] text-center tracking-[var(--INTER-SEMI-BOLD-h2-semi-bold-34px-letter-spacing)] leading-tight">
+              <h2 className="[font-family:'Inter',Helvetica] font-semibold text-white text-2xl md:text-3xl lg:text-[34px] leading-[41px] tracking-[-0.04em] text-center">
                 Ready to Glow Up?
               </h2>
-              <p className="font-INTER-SEMI-BOLD-h5-semi-bold-20px font-[number:var(--INTER-SEMI-BOLD-h5-semi-bold-20px-font-weight)] text-neutral-colorneutral-color-shade-1 text-base md:text-lg lg:text-[length:var(--INTER-SEMI-BOLD-h5-semi-bold-20px-font-size)] text-center">
+              <p className="[font-family:'Inter',Helvetica] font-semibold text-white text-base md:text-lg lg:text-[20px] leading-[27px] tracking-[-0.04em] text-center max-w-[644px]">
                 Thousands already have their sparkle. Time to get yours with Diamantra.
               </p>
             </div>
