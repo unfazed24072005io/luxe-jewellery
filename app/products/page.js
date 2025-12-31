@@ -150,7 +150,7 @@ export default async function ProductsPage() {
         {/* Left Text: "Rings That Feel Like You" */}
         <div className="md:w-1/2">
           <h2 className="[font-family:'Rische-Demo',Helvetica] font-normal text-white text-2xl md:text-[39px] leading-[1.2] tracking-[-0.78px]">
-            Rings That Feel <br> Like You
+            Rings That Feel Like You
           </h2>
         </div>
 
