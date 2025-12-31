@@ -67,7 +67,7 @@ export default async function ProductDetailPage({ params }) {
           {/* Product Details */}
           <div>
             <h1 className="text-4xl font-serif font-bold mb-4">{product.name}</h1>
-            <p className="text-3xl text-yellow-600 font-bold mb-6">${product.price?.toLocaleString()}</p>
+            <p className="text-3xl text-yellow-600 font-bold mb-6">₹{product.price?.toLocaleString()}</p>
             
             <div className="mb-6">
               <span className="inline-block bg-gray-200 px-3 py-1 text-sm text-gray-700 mr-2">
