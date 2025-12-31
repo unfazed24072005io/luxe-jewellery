@@ -34,6 +34,7 @@ async function getCollectionProducts(collectionSlug) {
 }
 
 export default async function CollectionDetailPage({ params }) {
+   try {
   const { slug } = params;
   const collectionData = await getCollection(slug);
   
@@ -53,7 +54,11 @@ export default async function CollectionDetailPage({ params }) {
       </div>
     );
   }
-
+} catch (error) {
+    console.error('Collection page error:', error);
+    return <div>Error loading collection</div>;
+  }
+}
   const products = await getCollectionProducts(slug);
 
   return (
