@@ -24,7 +24,7 @@ export default function ProductCard({ product }) {
             {product.name}
           </h3>
           <p className="text-gray-600 text-sm mb-2">{product.category} • {product.material}</p>
-          <p className="text-yellow-600 font-bold text-xl">${product.price?.toLocaleString()}</p>
+          <p className="text-yellow-600 font-bold text-xl">₹{product.price?.toLocaleString()}</p>
         </div>
       </div>
     </Link>
