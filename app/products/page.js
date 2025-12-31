@@ -172,15 +172,7 @@ export default async function ProductsPage() {
               </div>
 
               {/* Right Column - Image/Placeholder */}
-              <div className="relative h-[300px] md:h-[350px] rounded-[20px] overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-black">
-                  <div className="w-full h-full flex items-center justify-center">
-                    <div className="w-[150px] h-[150px] md:w-[200px] md:h-[200px] rounded-full bg-gradient-to-br from-[#d48b00]/20 to-transparent flex items-center justify-center">
-                      <div className="text-6xl md:text-8xl">💍</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              
             </div>
 
             {/* SHOP NOW Button in Grey Box Below */}
