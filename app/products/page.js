@@ -151,47 +151,46 @@ export default async function ProductsPage() {
       </div>
 
       {/* "Rings That Feel Like You" Section - Below Products */}
-      <section className="w-full bg-gradient-to-br from-gray-50 to-white py-12 md:py-16">
+      <section className="w-full relative py-12 md:py-16">
   <div className="max-w-7xl mx-auto px-4">
-    <div className="relative bg-gray-100 rounded-[25px] p-8 md:p-12 border border-gray-200 shadow-lg">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-        
-        {/* Left Column - First text */}
-        <div className="space-y-6">
-          <div className="flex items-center gap-4">
-            <div className="w-0.5 h-12 bg-red-600"></div>
-            <h2 className="[font-family:'Rische-Demo',Helvetica] font-normal text-black text-3xl md:text-4xl lg:text-[48px] tracking-[-1px] md:tracking-[-2px] leading-tight">
-              Rings That Feel Like You
-            </h2>
-          </div>
-        </div>
-
-        {/* Right Column - Next text */}
-        <div className="space-y-6">
-          <p className="[font-family:'Inter',Helvetica] font-medium text-gray-700 text-lg md:text-xl leading-relaxed text-right">
-            Minimal, meaningful, and made to last.<br />
-            Discover silver rings crafted for everyday elegance —<br />
-            with lab-grown brilliance and conscious design.
-          </p>
-        </div>
-
+    {/* Grey Rectangle Box */}
+    <div className="relative w-full h-[157px] bg-[#666666] rounded-[20px]">
+      
+      {/* Left Text: "Rings That Feel Like You" */}
+      <div className="absolute left-[38px] md:left-[457px] top-[38px] md:top-[1961px]">
+        <h2 className="[font-family:'Rische-Demo',Helvetica] font-normal text-white text-3xl md:text-[39px] leading-[41px] tracking-[-0.78px]">
+          Rings That Feel Like You
+        </h2>
       </div>
 
-      {/* Gold SHOP NOW Button aligned right */}
-      <div className="mt-10 pt-8 border-t border-gray-300">
-        <div className="bg-gray-800 rounded-[15px] p-6 md:p-8 max-w-md ml-auto">
-          <Link href="/products?category=rings">
-            <Button className="relative w-full h-[50px] bg-[#d48b00] hover:bg-[#c07f00] rounded-[100px] p-0 transition-all duration-300 hover:scale-105 group">
-              <div className="absolute top-1 left-1 w-[calc(100%-8px)] h-[42px] rounded-[100px] border-[0.8px] border-solid border-[#fdbe46]" />
-              <span className="relative z-10 [font-family:'Inter',Helvetica] font-semibold text-white text-sm md:text-base tracking-[0.5px] flex items-center justify-center gap-2">
-                SHOP NOW
-                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-              </span>
-            </Button>
-          </Link>
-        </div>
+      {/* Right Text Container */}
+      <div className="absolute left-[337px] md:left-[756px] top-[25px] md:top-[1948px] w-[358px]">
+        
+        {/* Right Text */}
+        <p className="[font-family:'Inter',Helvetica] font-normal text-white text-sm leading-[18px] mb-[19px]">
+          Minimal, meaningful, and made to last.<br />
+          Discover silver rings crafted for everyday elegance —<br />
+          with lab-grown brilliance and conscious design.
+        </p>
+
+        {/* Shop Now Button */}
+        <Link href="/products?category=rings">
+          <Button className="relative w-[150px] h-[42px] bg-[#d48b00] rounded-[100px] hover:bg-[#c07f00] p-0 transition-all duration-300">
+            {/* Outer Border */}
+            <div className="absolute top-[4px] left-[4px] w-[142px] h-[34px] rounded-[100px] border-[0.8px] border-solid border-[#fdbe46]" />
+            
+            {/* Button Text */}
+            <span className="relative z-10 [font-family:'Inter',Helvetica] font-semibold text-white text-xs">
+              Shop Now
+            </span>
+            
+            {/* Left Dot */}
+            <div className="absolute top-[19px] left-[2px] w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
+            
+            {/* Right Dot */}
+            <div className="absolute top-[19px] left-[143px] w-[5px] h-[5px] bg-[#fdbf47] rounded-[2.5px]" />
+          </Button>
+        </Link>
       </div>
     </div>
   </div>
