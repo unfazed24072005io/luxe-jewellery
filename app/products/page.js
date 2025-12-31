@@ -155,13 +155,13 @@ export default async function ProductsPage() {
 <section className="w-full py-12 md:py-16">
   <div className="max-w-7xl mx-auto px-4">
     {/* Grey Rectangle Box */}
-    <div className="relative w-full h-[157px] bg-[#666666] rounded-[20px] p-6 md:p-8">
+    <div className="relative w-full h-[190px] bg-[#666666] rounded-[20px] p-6 md:p-8">
       
       <div className="flex flex-col md:flex-row items-start justify-between h-full gap-4 md:gap-8">
         {/* Left Text: "Rings That Feel Like You" */}
         <div className="md:w-1/2">
           <h2 className="[font-family:'Rische-Demo',Helvetica] font-normal text-white text-2xl md:text-[39px] leading-[1.2] tracking-[-0.78px]">
-            Rings That Feel Like You
+            Rings That Feel <br> Like You
           </h2>
         </div>
 
