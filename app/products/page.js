@@ -204,7 +204,7 @@ export default async function ProductsPage() {
       </section>
 
       {/* Ready to Glow Up Section - Exactly like Home */}
-      <section className="w-full bg-gradient-to-br from-gray-900 via-black to-gray-900 py-16 md:py-20">
+      <section className="w-full bg-gray py-16 md:py-20">
         <div className="w-full bg-color-3 py-8 md:py-[66px]">
           <div className="flex flex-col items-center gap-6 md:gap-[30px] w-full max-w-[491px] mx-auto px-4">
             <div className="flex flex-col items-center gap-4 md:gap-6 w-full">
